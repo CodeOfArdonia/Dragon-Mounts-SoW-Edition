@@ -2,13 +2,13 @@
   "entity.dragon.ambient": {
     "sounds": [
       {
-        "name": "dragonmounts:entity/dragon/breathe1",
+        "name": "dragon_mounts:entity/dragon/breathe1",
         "volume": 0.5,
         "pitch": 0.5,
         "weight": 3
       },
       {
-        "name": "dragonmounts:entity/dragon/breathe2",
+        "name": "dragon_mounts:entity/dragon/breathe2",
         "volume": 0.5,
         "pitch": 0.5,
         "weight": 3
@@ -23,16 +23,16 @@
   "entity.dragon.step": {
     "sounds": [
       {
-        "name": "dragonmounts:entity/dragon/step1"
+        "name": "dragon_mounts:entity/dragon/step1"
       },
       {
-        "name": "dragonmounts:entity/dragon/step2"
+        "name": "dragon_mounts:entity/dragon/step2"
       },
       {
-        "name": "dragonmounts:entity/dragon/step3"
+        "name": "dragon_mounts:entity/dragon/step3"
       },
       {
-        "name": "dragonmounts:entity/dragon/step4"
+        "name": "dragon_mounts:entity/dragon/step4"
       }
     ],
     "subtitle": "subtitles.entity.dragon.step"
@@ -40,7 +40,7 @@
   "entity.dragon.death": {
     "sounds": [
       {
-        "name": "dragonmounts:entity/dragon/death"
+        "name": "dragon_mounts:entity/dragon/death"
       }
     ],
     "subtitle": "subtitles.entity.dragon.death"
@@ -48,7 +48,7 @@
   "entity.dragon.ambient.ghost": {
     "sounds": [
       {
-        "name": "dragonmounts:entity.dragon.ambient",
+        "name": "dragon_mounts:entity.dragon.ambient",
         "type": "event"
       },
       {

@@ -32,7 +32,7 @@ public class DragonMounts implements ModInitializer {
         DMLoots.init();
         DMSounds.init();
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(CrossBreedingManager.INSTANCE);
-        DynamicRegistries.registerSynced(BreedRegistry.REGISTRY_KEY, DragonBreed.CODEC, DragonBreed.NETWORK_CODEC, DynamicRegistries.SyncOption.SKIP_WHEN_EMPTY);
+        DynamicRegistries.registerSynced(BreedRegistry.REGISTRY_KEY, DragonBreed.CODEC, DragonBreed.NETWORK_CODEC);
         UseBlockCallback.EVENT.register((player, world, hand, blockHitResult) -> {
             BlockPos pos = blockHitResult.getBlockPos();
             if (DMLConfig.allowEggOverride() && world.getBlockState(pos).isOf(Blocks.DRAGON_EGG)) {

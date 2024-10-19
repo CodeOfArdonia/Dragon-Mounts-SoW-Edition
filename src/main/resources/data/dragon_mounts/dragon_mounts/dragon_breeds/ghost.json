@@ -1,22 +1,22 @@
 {
   "abilities": [
     {
-      "type": "dragonmounts:reaper_step"
+      "type": "dragon_mounts:reaper_step"
     }
   ],
-  "ambient_sound": "dragonmounts:entity.dragon.ambient.ghost",
+  "ambient_sound": "dragon_mounts:entity.dragon.ambient.ghost",
   "habitats": [
     {
-      "type": "dragonmounts:picky",
+      "type": "dragon_mounts:picky",
       "required_habitats": [
         {
-          "type": "dragonmounts:world_height",
+          "type": "dragon_mounts:world_height",
           "below": true,
           "height": 0,
           "points": 1
         },
         {
-          "type": "dragonmounts:light",
+          "type": "dragon_mounts:light",
           "below": true,
           "light": 3,
           "points": 2

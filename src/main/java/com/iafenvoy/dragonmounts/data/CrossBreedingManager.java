@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class CrossBreedingManager extends JsonDataLoader implements IdentifiableResourceReloadListener {
     public static final CrossBreedingManager INSTANCE = new CrossBreedingManager();
-    private static final String PATH = "dragonmounts/cross_breeding"; // data/[pack_name]/dragonmounts/cross_breeds/whatever.json
+    private static final String PATH = "dragon_mounts/cross_breeding"; // data/[pack_name]/dragon_mounts/cross_breeds/whatever.json
 
     private final Map<Couple, RegistryKey<DragonBreed>> crosses = new HashMap<>();
 

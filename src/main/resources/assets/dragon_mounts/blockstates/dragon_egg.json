@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "dragonmounts:block/dragon_egg_models"
+      "model": "dragon_mounts:block/dragon_egg_models"
     }
   }
 }

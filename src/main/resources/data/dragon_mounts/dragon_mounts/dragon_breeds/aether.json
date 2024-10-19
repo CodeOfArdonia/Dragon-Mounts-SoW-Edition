@@ -4,7 +4,7 @@
   },
   "habitats": [
     {
-      "type": "dragonmounts:world_height",
+      "type": "dragon_mounts:world_height",
       "height": 200
     }
   ],

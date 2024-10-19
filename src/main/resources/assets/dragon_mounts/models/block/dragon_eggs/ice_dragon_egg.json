@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:block/dragon_egg",
   "textures": {
-    "particle": "dragonmounts:block/ice_dragon_egg",
-    "all": "dragonmounts:block/ice_dragon_egg"
+    "particle": "dragon_mounts:block/ice_dragon_egg",
+    "all": "dragon_mounts:block/ice_dragon_egg"
   }
 }

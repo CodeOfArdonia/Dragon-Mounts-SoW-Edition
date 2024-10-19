@@ -1,17 +1,17 @@
 {
   "abilities": [
     {
-      "type": "dragonmounts:frost_walker",
+      "type": "dragon_mounts:frost_walker",
       "radius_multiplier": 3.0
     },
     {
-      "type": "dragonmounts:snow_stepper"
+      "type": "dragon_mounts:snow_stepper"
     }
   ],
   "habitats": [
     {
-      "type": "dragonmounts:nearby_blocks",
-      "block_tag": "dragonmounts:ice_dragon_habitat_blocks"
+      "type": "dragon_mounts:nearby_blocks",
+      "block_tag": "dragon_mounts:ice_dragon_habitat_blocks"
     }
   ],
   "hatch_particles": {

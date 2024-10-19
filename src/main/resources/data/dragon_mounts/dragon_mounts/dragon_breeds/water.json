@@ -1,18 +1,18 @@
 {
   "abilities": [
     {
-      "type": "dragonmounts:hydro_step"
+      "type": "dragon_mounts:hydro_step"
     }
   ],
   "habitats": [
     {
-      "type": "dragonmounts:in_fluid",
+      "type": "dragon_mounts:in_fluid",
       "fluid_tag": "minecraft:water",
       "point_multiplier": 1.0
     },
     {
-      "type": "dragonmounts:nearby_blocks",
-      "block_tag": "dragonmounts:water_dragon_habitat_blocks"
+      "type": "dragon_mounts:nearby_blocks",
+      "block_tag": "dragon_mounts:water_dragon_habitat_blocks"
     }
   ],
   "hatch_particles": {

@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "dragonmounts:dragon_egg",
+          "name": "dragon_mounts:dragon_egg",
           "functions": [
             {
               "function": "minecraft:copy_name",
@@ -15,7 +15,7 @@
             },
             {
               "function": "minecraft:copy_state",
-              "block": "dragonmounts:dragon_egg",
+              "block": "dragon_mounts:dragon_egg",
               "properties": [
                 "hatch_stage"
               ]

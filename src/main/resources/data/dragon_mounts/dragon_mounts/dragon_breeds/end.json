@@ -4,7 +4,7 @@
   },
   "habitats": [
     {
-      "type": "dragonmounts:dragon_breath"
+      "type": "dragon_mounts:dragon_breath"
     }
   ],
   "hatch_particles": {

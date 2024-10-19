@@ -1,16 +1,16 @@
 {
   "abilities": [
     {
-      "type": "dragonmounts:green_toes"
+      "type": "dragon_mounts:green_toes"
     }
   ],
   "habitats": [
     {
-      "type": "dragonmounts:nearby_blocks",
-      "block_tag": "dragonmounts:forest_dragon_habitat_blocks"
+      "type": "dragon_mounts:nearby_blocks",
+      "block_tag": "dragon_mounts:forest_dragon_habitat_blocks"
     },
     {
-      "type": "dragonmounts:biome",
+      "type": "dragon_mounts:biome",
       "biome_tag": "minecraft:is_jungle"
     }
   ],

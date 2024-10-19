@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-@SuppressWarnings("deprecation")
 public record DragonBreed(int primaryColor, int secondaryColor, Optional<ParticleEffect> hatchParticles,
                           Map<EntityAttribute, Double> attributes, List<Ability.Factory<Ability>> abilityTypes,
                           List<Habitat> habitats,
