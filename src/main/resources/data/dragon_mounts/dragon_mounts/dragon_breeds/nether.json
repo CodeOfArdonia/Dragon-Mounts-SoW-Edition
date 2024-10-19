@@ -1,0 +1,31 @@
+{
+  "attributes": {
+    "minecraft:generic.armor": 8.0
+  },
+  "habitats": [
+    {
+      "type": "dragonmounts:nearby_blocks",
+      "block_tag": "dragonmounts:nether_dragon_habitat_blocks"
+    },
+    {
+      "type": "dragonmounts:biome",
+      "biome_tag": "minecraft:is_nether",
+      "points": 3
+    }
+  ],
+  "hatch_particles": {
+    "type": "minecraft:soul_fire_flame"
+  },
+  "immunities": [
+    "minecraft:on_fire",
+    "minecraft:in_fire",
+    "minecraft:lava",
+    "minecraft:hot_floor",
+    "minecraft:cactus",
+    "minecraft:sweet_berry_bush",
+    "minecraft:dragon_breath"
+  ],
+  "primary_color": "912400",
+  "reproduction_limit": "config:nether",
+  "secondary_color": "2e0b00"
+}

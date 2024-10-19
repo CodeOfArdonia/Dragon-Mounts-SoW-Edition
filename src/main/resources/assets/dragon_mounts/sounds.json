@@ -1,0 +1,63 @@
+{
+  "entity.dragon.ambient": {
+    "sounds": [
+      {
+        "name": "dragonmounts:entity/dragon/breathe1",
+        "volume": 0.5,
+        "pitch": 0.5,
+        "weight": 3
+      },
+      {
+        "name": "dragonmounts:entity/dragon/breathe2",
+        "volume": 0.5,
+        "pitch": 0.5,
+        "weight": 3
+      },
+      {
+        "name": "minecraft:entity.ender_dragon.growl",
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.entity.dragon.ambient"
+  },
+  "entity.dragon.step": {
+    "sounds": [
+      {
+        "name": "dragonmounts:entity/dragon/step1"
+      },
+      {
+        "name": "dragonmounts:entity/dragon/step2"
+      },
+      {
+        "name": "dragonmounts:entity/dragon/step3"
+      },
+      {
+        "name": "dragonmounts:entity/dragon/step4"
+      }
+    ],
+    "subtitle": "subtitles.entity.dragon.step"
+  },
+  "entity.dragon.death": {
+    "sounds": [
+      {
+        "name": "dragonmounts:entity/dragon/death"
+      }
+    ],
+    "subtitle": "subtitles.entity.dragon.death"
+  },
+  "entity.dragon.ambient.ghost": {
+    "sounds": [
+      {
+        "name": "dragonmounts:entity.dragon.ambient",
+        "type": "event"
+      },
+      {
+        "name": "minecraft:entity.skeleton.ambient",
+        "volume": 0.35,
+        "pitch": 0.5,
+        "type": "event"
+      }
+    ],
+    "subtitle": "subtitles.entity.dragon.ambient.ghost"
+  }
+}

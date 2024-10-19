@@ -1,0 +1,21 @@
+{
+  "attributes": {
+    "minecraft:generic.max_health": 75.0
+  },
+  "habitats": [
+    {
+      "type": "dragonmounts:dragon_breath"
+    }
+  ],
+  "hatch_particles": {
+    "type": "minecraft:portal"
+  },
+  "immunities": [
+    "minecraft:cactus",
+    "minecraft:sweet_berry_bush",
+    "minecraft:dragon_breath"
+  ],
+  "primary_color": "161616",
+  "reproduction_limit": "config:end",
+  "secondary_color": "ff63e8"
+}

@@ -1,0 +1,114 @@
+package com.iafenvoy.dragonmounts.dragon;
+
+import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
+import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
+import com.iafenvoy.dragonmounts.registry.DMEntities;
+import com.iafenvoy.dragonmounts.registry.DMItems;
+import com.iafenvoy.uranus.ServerHelper;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SpawnEggItem;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
+
+import java.util.Optional;
+
+public class DragonSpawnEgg extends SpawnEggItem {
+    private static final String DATA_TAG = "ItemData";
+    private static final String DATA_ITEM_NAME = "ItemName";
+    private static final String DATA_PRIM_COLOR = "PrimaryColor";
+    private static final String DATA_SEC_COLOR = "SecondaryColor";
+
+    public DragonSpawnEgg() {
+        super(DMEntities.DRAGON, 0, 0, new Item.Settings());
+    }
+
+    public static ItemStack create(DragonBreed breed, DynamicRegistryManager reg) {
+        var id = breed.id(reg);
+        var root = new NbtCompound();
+        // entity tag
+        var entityTag = new NbtCompound();
+        entityTag.putString(TameableDragon.NBT_BREED, id.toString());
+        root.put(EntityType.ENTITY_TAG_KEY, entityTag);
+        // name & colors
+        // storing these in the stack nbt is more performant than getting the breed everytime
+        var itemDataTag = new NbtCompound();
+        itemDataTag.putString(DATA_ITEM_NAME, String.join(".", DMItems.SPAWN_EGG.getTranslationKey(), id.getNamespace(), id.getPath()));
+        itemDataTag.putInt(DATA_PRIM_COLOR, breed.primaryColor());
+        itemDataTag.putInt(DATA_SEC_COLOR, breed.secondaryColor());
+        root.put(DATA_TAG, itemDataTag);
+        ItemStack stack = new ItemStack(DMItems.SPAWN_EGG);
+        stack.setNbt(root);
+        return stack;
+    }
+
+    public static void populateTab(FabricItemGroupEntries registrar) {
+        if (MinecraftClient.getInstance().world != null) {
+            var reg = MinecraftClient.getInstance().world.getRegistryManager();
+            for (DragonBreed breed : BreedRegistry.registry(reg))
+                registrar.add(create(breed, reg));
+        }
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+        super.inventoryTick(stack, world, entity, slot, selected);
+        preconditionSpawnEgg(stack);
+    }
+
+    @Override
+    public Text getName(ItemStack stack) {
+        var tag = stack.getSubNbt(DATA_TAG);
+        if (tag != null && tag.contains(DATA_ITEM_NAME))
+            return Text.translatable(tag.getString(DATA_ITEM_NAME));
+        return super.getName(stack);
+    }
+
+    @Override
+    public Optional<MobEntity> spawnBaby(PlayerEntity pPlayer, MobEntity pMob, EntityType<? extends MobEntity> pEntityType, ServerWorld pServerLevel, Vec3d pPos, ItemStack pStack) {
+        var entityTag = pStack.getSubNbt(EntityType.ENTITY_TAG_KEY);
+        if (entityTag != null) {
+            var breedID = entityTag.getString(TameableDragon.NBT_BREED);
+            if (!breedID.isEmpty() && pMob instanceof TameableDragon dragon && dragon.getBreed() != BreedRegistry.get(breedID, pServerLevel.getRegistryManager()))
+                return Optional.empty();
+        }
+        return super.spawnBaby(pPlayer, pMob, pEntityType, pServerLevel, pPos, pStack);
+    }
+
+    public static int getColor(ItemStack stack, int tintIndex) {
+        var tag = stack.getSubNbt(DATA_TAG);
+        if (tag != null)
+            return tintIndex == 0 ? tag.getInt(DATA_PRIM_COLOR) : tag.getInt(DATA_SEC_COLOR);
+        return 0xffffff;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private static void preconditionSpawnEgg(ItemStack stack) {
+        if (ServerHelper.server == null) return;
+
+        var root = stack.getOrCreateNbt();
+        var blockEntityData = stack.getOrCreateSubNbt(EntityType.ENTITY_TAG_KEY);
+        var breedId = blockEntityData.getString(TameableDragon.NBT_BREED);
+        var regAcc = ServerHelper.server.getRegistryManager();
+        var reg = BreedRegistry.registry(regAcc);
+
+        if (breedId.isEmpty() || !reg.containsId(new Identifier(breedId))) {// this item doesn't contain a breed yet?
+            // assign one ourselves then.
+            var breed = reg.getRandom(Random.create()).orElseThrow();
+            var updated = create(breed.value(), regAcc);
+            root.copyFrom(updated.getNbt());
+        }
+    }
+}
