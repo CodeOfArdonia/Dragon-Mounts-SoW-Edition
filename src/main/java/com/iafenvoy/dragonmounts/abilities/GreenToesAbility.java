@@ -11,6 +11,7 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
 public class GreenToesAbility extends FootprintAbility implements Ability.Factory<GreenToesAbility> {
@@ -23,28 +24,25 @@ public class GreenToesAbility extends FootprintAbility implements Ability.Factor
     // grow mushrooms and plants
     @Override
     protected void placeFootprint(TameableDragon dragon, BlockPos pos) {
-        var level = dragon.getWorld();
-        var groundPos = pos.down();
-        var steppingOn = level.getBlockState(groundPos);
-        var steppingOver = level.getBlockState(pos);
+        World world = dragon.getWorld();
+        BlockPos groundPos = pos.down();
+        BlockState steppingOn = world.getBlockState(groundPos);
+        BlockState steppingOver = world.getBlockState(pos);
 
-        if (steppingOn.isOf(Blocks.DIRT)) // regrow grass on dirt
-        {
-            level.setBlockState(groundPos, Blocks.GRASS_BLOCK.getDefaultState());
-            level.syncWorldEvent(WorldEvents.BONE_MEAL_USED, groundPos, 2);
+        if (steppingOn.isOf(Blocks.DIRT)) {// regrow grass on dirt
+            world.setBlockState(groundPos, Blocks.GRASS_BLOCK.getDefaultState());
+            world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, groundPos, 2);
             return;
         }
 
-        if (steppingOver.isAir()) // manually place flowers, mushrooms, etc.
-        {
+        if (steppingOver.isAir()) {// manually place flowers, mushrooms, etc.
             BlockState placing = null;
 
             if (steppingOn.isIn(BlockTags.MUSHROOM_GROW_BLOCK))
-                placing = (level.getRandom().nextBoolean() ? Blocks.RED_MUSHROOM : Blocks.BROWN_MUSHROOM).getDefaultState();
-            else if (steppingOn.isIn(BlockTags.DIRT) && !steppingOn.isOf(Blocks.MOSS_BLOCK)) // different from the actual dirt block, could be grass or podzol.
-            {
+                placing = (world.getRandom().nextBoolean() ? Blocks.RED_MUSHROOM : Blocks.BROWN_MUSHROOM).getDefaultState();
+            else if (steppingOn.isIn(BlockTags.DIRT) && !steppingOn.isOf(Blocks.MOSS_BLOCK)) {// different from the actual dirt block, could be grass or podzol.
                 // while grass blocks etc. do have defined bone meal behavior, I think our own is more viable.
-                placing = level.getRegistryManager().get(RegistryKeys.BLOCK)
+                placing = world.getRegistryManager().get(RegistryKeys.BLOCK)
                         .getEntryList(BlockTags.SMALL_FLOWERS)
                         .flatMap(tag -> tag.getRandom(dragon.getRandom()))
                         .map(RegistryEntry::value)
@@ -53,9 +51,9 @@ public class GreenToesAbility extends FootprintAbility implements Ability.Factor
                         .getDefaultState();
             }
 
-            if (placing != null && placing.canPlaceAt(level, pos)) {
-                level.setBlockState(pos, placing);
-                level.syncWorldEvent(WorldEvents.BONE_MEAL_USED, pos, 0);
+            if (placing != null && placing.canPlaceAt(world, pos)) {
+                world.setBlockState(pos, placing);
+                world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, pos, 0);
                 return;
             }
         }
@@ -70,16 +68,16 @@ public class GreenToesAbility extends FootprintAbility implements Ability.Factor
         }
 
         // perform standard bone meal behavior on steppingOn or steppingOver block.
-        var caret = pos;
+        BlockPos caret = pos;
         for (int i = 0; i < 2; caret = groundPos) {
             i++;
-            var state = level.getBlockState(caret);
-            if (!(state.getBlock() instanceof Fertilizable b) || !b.isFertilizable(level, caret, state, level.isClient()))
+            BlockState state = world.getBlockState(caret);
+            if (!(state.getBlock() instanceof Fertilizable b) || !b.isFertilizable(world, caret, state, world.isClient()))
                 continue;
 
-            if (b.canGrow(level, dragon.getRandom(), caret, state)) {
-                b.grow((ServerWorld) level, level.getRandom(), caret, state);
-                level.syncWorldEvent(WorldEvents.BONE_MEAL_USED, caret, 0);
+            if (b.canGrow(world, dragon.getRandom(), caret, state)) {
+                b.grow((ServerWorld) world, world.getRandom(), caret, state);
+                world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, caret, 0);
                 return;
             }
         }

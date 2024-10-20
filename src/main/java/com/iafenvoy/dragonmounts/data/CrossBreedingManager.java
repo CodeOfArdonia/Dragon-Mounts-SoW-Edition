@@ -10,6 +10,7 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
@@ -34,11 +35,10 @@ public class CrossBreedingManager extends JsonDataLoader implements Identifiable
     @Override
     protected void apply(Map<Identifier, JsonElement> entries, ResourceManager pResourceManager, Profiler pProfiler) {
         this.crosses.clear();
-
-        for (var entry : entries.entrySet()) {
-            var id = entry.getKey();
-            var json = entry.getValue();
-            var cross = CrossBreedResult.CODEC.parse(JsonOps.INSTANCE, json)
+        for (Map.Entry<Identifier, JsonElement> entry : entries.entrySet()) {
+            Identifier id = entry.getKey();
+            JsonElement json = entry.getValue();
+            CrossBreedResult cross = CrossBreedResult.CODEC.parse(JsonOps.INSTANCE, json)
                     .getOrThrow(false, Util.addPrefix("Unable to parse Cross Breeding result for: " + id, DragonMounts.LOGGER::error));
             this.crosses.put(new Couple(cross.parent1(), cross.parent2()), cross.child());
         }
@@ -46,11 +46,10 @@ public class CrossBreedingManager extends JsonDataLoader implements Identifiable
 
     @Nullable
     public DragonBreed getCrossBreed(DragonBreed parent, DragonBreed mate, DynamicRegistryManager ra) {
-        var reg = BreedRegistry.registry(ra);
-        var parentKey = reg.getKey(parent).orElseThrow();
-        var mateKey = reg.getKey(mate).orElseThrow();
-        var result = this.crosses.get(new Couple(parentKey, mateKey));
-
+        Registry<DragonBreed> reg = BreedRegistry.registry(ra);
+        RegistryKey<DragonBreed> parentKey = reg.getKey(parent).orElseThrow();
+        RegistryKey<DragonBreed> mateKey = reg.getKey(mate).orElseThrow();
+        RegistryKey<DragonBreed> result = this.crosses.get(new Couple(parentKey, mateKey));
         return result == null ? null : reg.get(result);
     }
 

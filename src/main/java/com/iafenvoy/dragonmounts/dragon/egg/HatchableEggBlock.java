@@ -14,6 +14,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
@@ -29,6 +30,7 @@ import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -47,9 +49,11 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.border.WorldBorder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 import static net.minecraft.state.property.Properties.WATERLOGGED;
 
@@ -79,20 +83,19 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
 
     public static void populateTab(FabricItemGroupEntries registrar) {
         if (MinecraftClient.getInstance().world != null) {
-            var reg = MinecraftClient.getInstance().world.getRegistryManager();
+            DynamicRegistryManager reg = MinecraftClient.getInstance().world.getRegistryManager();
             for (DragonBreed breed : BreedRegistry.registry(reg))
                 registrar.add(Item.create(breed, reg));
         }
     }
 
     @SuppressWarnings("ConstantConditions")
-    public static HatchableEggBlockEntity place(ServerWorld level, BlockPos pos, BlockState state, DragonBreed breed) {
-        level.setBlockState(pos, state, Block.NOTIFY_ALL);
-
+    public static HatchableEggBlockEntity place(ServerWorld world, BlockPos pos, BlockState state, DragonBreed breed) {
+        world.setBlockState(pos, state, Block.NOTIFY_ALL);
         // Forcibly add new BlockEntity, so we can set the specific breed.
-        var data = ((HatchableEggBlockEntity) ((HatchableEggBlock) state.getBlock()).createBlockEntity(pos, state));
+        HatchableEggBlockEntity data = ((HatchableEggBlockEntity) ((HatchableEggBlock) state.getBlock()).createBlockEntity(pos, state));
         data.setBreed(() -> breed);
-        level.addBlockEntity(data);
+        world.addBlockEntity(data);
         return data;
     }
 
@@ -104,7 +107,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
 
     @Override
     public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
-        var breed = world.getBlockEntity(pos) instanceof HatchableEggBlockEntity e && e.hasBreed() ?
+        DragonBreed breed = world.getBlockEntity(pos) instanceof HatchableEggBlockEntity e && e.hasBreed() ?
                 e.getBreed() :
                 BreedRegistry.getRandom(world.getRegistryManager(), world.getRandom());
         if (breed != null)
@@ -142,12 +145,9 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
     }
 
     @Override
-    public void onBlockBreakStart(BlockState state, World level, BlockPos at, PlayerEntity pPlayer) {
-        if (level.getBlockEntity(at) instanceof HatchableEggBlockEntity e
-                && e.hasBreed()
-                && e.getBreed().id(level.getRegistryManager()).getPath().equals("end")
-                && !state.get(HATCHING))
-            teleport(state, level, at); // retain original dragon egg teleport behavior
+    public void onBlockBreakStart(BlockState state, World world, BlockPos at, PlayerEntity pPlayer) {
+        if (world.getBlockEntity(at) instanceof HatchableEggBlockEntity e && e.getBreed() != null && e.getBreed().id(world.getRegistryManager()).getPath().equals("end") && !state.get(HATCHING))
+            teleport(state, world, at); // retain original dragon egg teleport behavior
     }
 
     @Override
@@ -168,15 +168,14 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
 //    }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView level, List<Text> tooltips, TooltipContext pFlag) {
-        super.appendTooltip(stack, level, tooltips, pFlag);
+    public void appendTooltip(ItemStack stack, @Nullable BlockView level, List<Text> tooltips, TooltipContext context) {
+        super.appendTooltip(stack, level, tooltips, context);
 
-        var tag = stack.getSubNbt(BlockItem.BLOCK_STATE_TAG_KEY);
-        var stage = tag != null ? tag.getString(NBT_HATCH_STAGE) : "0";
-        tooltips.add(Text.translatable(this.getTranslationKey() + ".hatch_stage." + stage)
-                .formatted(Formatting.GRAY));
+        NbtCompound tag = stack.getSubNbt(BlockItem.BLOCK_STATE_TAG_KEY);
+        String stage = tag != null ? tag.getString(NBT_HATCH_STAGE) : "0";
+        tooltips.add(Text.translatable(this.getTranslationKey() + ".hatch_stage." + stage).formatted(Formatting.GRAY));
 
-        var player = MinecraftClient.getInstance().player;
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (player != null && player.getAbilities().creativeMode) {
             tooltips.add(ScreenTexts.EMPTY);
             tooltips.add(Text.translatable(this.getTranslationKey() + ".desc1").formatted(Formatting.GRAY));
@@ -185,11 +184,10 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction pDirection, BlockState pNeighborState, WorldAccess level, BlockPos pCurrentPos, BlockPos pNeighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos currentPos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED))
-            level.scheduleFluidTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickRate(level));
-
-        return super.getStateForNeighborUpdate(state, pDirection, pNeighborState, level, pCurrentPos, pNeighborPos);
+            world.scheduleFluidTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, currentPos, neighborPos);
     }
 
     @Override
@@ -198,14 +196,13 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
     }
 
     @Override
-    public void scheduledTick(BlockState pState, ServerWorld pLevel, BlockPos pPos, Random pRandom) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         // Original logic trashes BlockEntity data. We need it, so do it ourselves.
-        if (canFallThrough(pLevel.getBlockState(pPos.down())) && pPos.getY() >= pLevel.getBottomY()) {
+        if (canFallThrough(world.getBlockState(pos.down())) && pos.getY() >= world.getBottomY()) {
             NbtCompound tag = null;
-            if (pLevel.getBlockEntity(pPos) instanceof HatchableEggBlockEntity e)
-                tag = e.createNbt();
+            if (world.getBlockEntity(pos) instanceof HatchableEggBlockEntity e) tag = e.createNbt();
 
-            var entity = FallingBlockEntity.spawnFromBlock(pLevel, pPos, pState); // this deletes the block. We need to cache the data first and then apply it.
+            FallingBlockEntity entity = FallingBlockEntity.spawnFromBlock(world, pos, state); // this deletes the block. We need to cache the data first and then apply it.
             if (tag != null) entity.blockEntityData = tag;
             this.configureFallingBlockEntity(entity);
         }
@@ -217,36 +214,36 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
     }
 
     @Override // will only tick when HATCHING, according to isRandomlyTicking
-    public void randomTick(BlockState state, ServerWorld level, BlockPos pos, Random random) {
-        if (!(level.getBlockEntity(pos) instanceof HatchableEggBlockEntity data) || !data.hasBreed()) return;
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (!(world.getBlockEntity(pos) instanceof HatchableEggBlockEntity data) || data.getBreed() == null) return;
         int hatchStage = state.get(HATCH_STAGE);
-        var finalStage = hatchStage == 3;
+        boolean finalStage = hatchStage == 3;
 
         if (random.nextFloat() < data.getBreed().hatchChance()) {
             if (finalStage)
-                this.hatch(level, pos);
+                this.hatch(world, pos);
             else {
-                this.crack(level, pos);
-                level.setBlockState(pos, state.with(HATCH_STAGE, hatchStage + 1), Block.NOTIFY_ALL);
+                this.crack(world, pos);
+                world.setBlockState(pos, state.with(HATCH_STAGE, hatchStage + 1), Block.NOTIFY_ALL);
             }
             return;
         }
 
         if (finalStage) // too far gone to change habitats now!
-            this.crack(level, pos); // being closer to hatching creates more struggles to escape
+            this.crack(world, pos); // being closer to hatching creates more struggles to escape
         else if (DMLConfig.updateHabitats() && !data.getTransition().isRunning())
             data.updateHabitat();
     }
 
     @Override
-    public void randomDisplayTick(BlockState pState, World pLevel, BlockPos pPos, Random random) {
-        if (pState.get(HATCHING) && pLevel.getBlockEntity(pPos) instanceof HatchableEggBlockEntity e && e.hasBreed())
+    public void randomDisplayTick(BlockState pState, World world, BlockPos pPos, Random random) {
+        if (pState.get(HATCHING) && world.getBlockEntity(pPos) instanceof HatchableEggBlockEntity e && e.hasBreed())
             for (int i = 0; i < random.nextBetween(4, 7); i++)
-                this.addHatchingParticles(e.getBreed(), pLevel, pPos, random);
+                this.addHatchingParticles(e.getBreed(), world, pPos, random);
     }
 
-    private void crack(ServerWorld level, BlockPos pos) {
-        level.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.85f, 0.95f + level.getRandom().nextFloat() * 0.2f);
+    private void crack(ServerWorld world, BlockPos pos) {
+        world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.85f, 0.95f + world.getRandom().nextFloat() * 0.2f);
     }
 
     @SuppressWarnings("ConstantConditions") // creation of dragon is never null
@@ -292,34 +289,31 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
     }
 
     // taken from DragonEggBlock#teleport
-    private static void teleport(BlockState state, World level, BlockPos pos) {
-        var worldBorder = level.getWorldBorder();
+    private static void teleport(BlockState state, World world, BlockPos pos) {
+        WorldBorder worldBorder = world.getWorldBorder();
 
-        for (int i = 0; i < 1000; ++i) // excessive?
-        {
-            var teleportPos = pos.add(level.random.nextInt(16) - level.random.nextInt(16), level.random.nextInt(8) - level.random.nextInt(8), level.random.nextInt(16) - level.random.nextInt(16));
-            if (level.getBlockState(teleportPos).isAir() && worldBorder.contains(teleportPos)) {
-                if (level.isClient) {
+        for (int i = 0; i < 1000; ++i) {// excessive?
+            BlockPos teleportPos = pos.add(world.random.nextInt(16) - world.random.nextInt(16), world.random.nextInt(8) - world.random.nextInt(8), world.random.nextInt(16) - world.random.nextInt(16));
+            if (world.getBlockState(teleportPos).isAir() && worldBorder.contains(teleportPos)) {
+                if (world.isClient) {
                     for (int j = 0; j < 128; ++j) {
-                        double d0 = level.random.nextDouble();
-                        float f = (level.random.nextFloat() - 0.5F) * 0.2F;
-                        float f1 = (level.random.nextFloat() - 0.5F) * 0.2F;
-                        float f2 = (level.random.nextFloat() - 0.5F) * 0.2F;
-                        double d1 = MathHelper.lerp(d0, teleportPos.getX(), pos.getX()) + (level.random.nextDouble() - 0.5D) + 0.5D;
-                        double d2 = MathHelper.lerp(d0, teleportPos.getY(), pos.getY()) + level.random.nextDouble() - 0.5D;
-                        double d3 = MathHelper.lerp(d0, teleportPos.getZ(), pos.getZ()) + (level.random.nextDouble() - 0.5D) + 0.5D;
-                        level.addParticle(ParticleTypes.PORTAL, d1, d2, d3, f, f1, f2);
+                        double d0 = world.random.nextDouble();
+                        float f = (world.random.nextFloat() - 0.5F) * 0.2F;
+                        float f1 = (world.random.nextFloat() - 0.5F) * 0.2F;
+                        float f2 = (world.random.nextFloat() - 0.5F) * 0.2F;
+                        double d1 = MathHelper.lerp(d0, teleportPos.getX(), pos.getX()) + (world.random.nextDouble() - 0.5D) + 0.5D;
+                        double d2 = MathHelper.lerp(d0, teleportPos.getY(), pos.getY()) + world.random.nextDouble() - 0.5D;
+                        double d3 = MathHelper.lerp(d0, teleportPos.getZ(), pos.getZ()) + (world.random.nextDouble() - 0.5D) + 0.5D;
+                        world.addParticle(ParticleTypes.PORTAL, d1, d2, d3, f, f1, f2);
                     }
                 } else {
                     // Original Dragon Egg does not have a BlockEntity to account for,
                     // so our own teleport will now restore the block data.
-
-                    var data = level.getBlockEntity(pos).createNbt();
-                    level.removeBlock(pos, false);
-                    level.setBlockState(teleportPos, state, Block.NOTIFY_LISTENERS);
-                    level.getBlockEntity(teleportPos).readNbt(data);
+                    NbtCompound data = Objects.requireNonNull(world.getBlockEntity(pos)).createNbt();
+                    world.removeBlock(pos, false);
+                    world.setBlockState(teleportPos, state, Block.NOTIFY_LISTENERS);
+                    Objects.requireNonNull(world.getBlockEntity(teleportPos)).readNbt(data);
                 }
-
                 return;
             }
         }
@@ -368,22 +362,17 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
         @Override
         public ActionResult place(ItemPlacementContext pContext) {
             var result = super.place(pContext);
-            if (result.isAccepted()
-                    && pContext.getStack().hasCustomName()
-                    && pContext.getWorld().getBlockEntity(pContext.getBlockPos()) instanceof HatchableEggBlockEntity e
-            )
+            if (result.isAccepted() && pContext.getStack().hasCustomName() && pContext.getWorld().getBlockEntity(pContext.getBlockPos()) instanceof HatchableEggBlockEntity e)
                 e.setCustomName(pContext.getStack().getName());
             return result;
         }
 
         private static void ensureExistingBreedType(ItemStack stack) {
             if (ServerHelper.server == null) return;
-
             if (!stack.hasNbt()) stack.setNbt(new NbtCompound());
-            var blockEntityData = stack.getOrCreateSubNbt(BlockItem.BLOCK_ENTITY_TAG_KEY);
-            var breed = blockEntityData.getString(NBT_BREED);
-            var reg = BreedRegistry.registry(ServerHelper.server.getRegistryManager());
-
+            NbtCompound blockEntityData = stack.getOrCreateSubNbt(BlockItem.BLOCK_ENTITY_TAG_KEY);
+            String breed = blockEntityData.getString(NBT_BREED);
+            Registry<DragonBreed> reg = BreedRegistry.registry(ServerHelper.server.getRegistryManager());
             if (breed.isEmpty() || !reg.containsId(new Identifier(breed))) {// this item doesn't contain a breed yet?
                 breed = reg.getRandom(Random.create()).orElseThrow().registryKey().getValue().toString();
                 blockEntityData.putString(NBT_BREED, breed); // assign one ourselves then.
@@ -391,12 +380,10 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
         }
 
         public static ItemStack create(DragonBreed breed, DynamicRegistryManager reg) {
-            var tag = new NbtCompound();
+            NbtCompound tag = new NbtCompound();
             tag.putString(TameableDragon.NBT_BREED, breed.id(reg).toString());
-
-            var stack = new ItemStack(DMBlocks.EGG_BLOCK);
+            ItemStack stack = new ItemStack(DMBlocks.EGG_BLOCK);
             BlockItem.setBlockEntityNbt(stack, DMBlocks.EGG_BLOCK_ENTITY, tag);
-
             return stack;
         }
     }

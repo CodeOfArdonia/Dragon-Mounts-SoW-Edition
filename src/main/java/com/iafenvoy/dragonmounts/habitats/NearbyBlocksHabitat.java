@@ -16,10 +16,8 @@ public record NearbyBlocksHabitat(float multiplier, TagKey<Block> tag) implement
     ).apply(instance, NearbyBlocksHabitat::new));
 
     @Override
-    public int getHabitatPoints(World level, BlockPos basePos) {
-        return (int) (BlockPos.stream(basePos.add(1, 1, 1), basePos.add(-1, -1, -1))
-                .filter(p -> level.getBlockState(p).isIn(this.tag))
-                .count() * this.multiplier);
+    public int getHabitatPoints(World world, BlockPos basePos) {
+        return (int) (BlockPos.stream(basePos.add(1, 1, 1), basePos.add(-1, -1, -1)).filter(p -> world.getBlockState(p).isIn(this.tag)).count() * this.multiplier);
     }
 
     @Override

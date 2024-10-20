@@ -10,7 +10,7 @@ public abstract class FootprintAbility implements Ability {
         if (dragon.getAgeProgress() < 0.5 || !dragon.isOnGround()) return;
         if (!DragonGriefingCallback.EVENT.invoker().allow(dragon.getWorld(), dragon)) return;
 
-        var chance = this.getFootprintChance(dragon);
+        float chance = this.getFootprintChance(dragon);
         if (chance == 0) return;
 
         for (int i = 0; i < 4; i++) {
@@ -21,8 +21,7 @@ public abstract class FootprintAbility implements Ability {
             int bx = (int) (dragon.getX() + (i % 2 * 2 - 1) * dragon.getScaleFactor());
             int by = (int) dragon.getY();
             int bz = (int) (dragon.getZ() + (i / 2f % 2 * 2 - 1) * dragon.getScaleFactor());
-            var pos = new BlockPos(bx, by, bz);
-
+            BlockPos pos = new BlockPos(bx, by, bz);
             this.placeFootprint(dragon, pos);
         }
     }

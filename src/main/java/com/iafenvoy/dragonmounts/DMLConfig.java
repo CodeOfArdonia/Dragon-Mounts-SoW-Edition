@@ -41,7 +41,7 @@ public class DMLConfig {
     private static final Map<String, ForgeConfigSpec.DoubleValue> EGG_CHANCES;
 
     public static float getEggChanceFor(String configTarget) {
-        var chance = EGG_CHANCES.get(configTarget);
+        ForgeConfigSpec.DoubleValue chance = EGG_CHANCES.get(configTarget);
         if (chance == null) return -1f;
         return chance.get().floatValue();
     }
@@ -49,13 +49,13 @@ public class DMLConfig {
     private static final Map<String, ForgeConfigSpec.IntValue> REPRO_LIMITS;
 
     public static int getReproLimitFor(String configTarget) {
-        var limit = REPRO_LIMITS.get(configTarget.replace("config:", ""));
+        ForgeConfigSpec.IntValue limit = REPRO_LIMITS.get(configTarget.replace("config:", ""));
         if (limit == null) return -1;
         return limit.get();
     }
 
     static {
-        var configurator = new ForgeConfigSpec.Builder()
+        ForgeConfigSpec.Builder configurator = new ForgeConfigSpec.Builder()
                 .push("config");
 
         ALLOW_EGG_OVERRIDE = configurator.comment(
@@ -127,7 +127,7 @@ public class DMLConfig {
     }
 
     static {
-        var configurator = new ForgeConfigSpec.Builder()
+        ForgeConfigSpec.Builder configurator = new ForgeConfigSpec.Builder()
                 .push("client");
 
         CAMERA_DRIVEN_FLIGHT = configurator.comment(
@@ -152,10 +152,10 @@ public class DMLConfig {
     }
 
     private static ImmutableMap<String, ForgeConfigSpec.DoubleValue> defineChanceEntries(ForgeConfigSpec.Builder configurator) {
-        var chances = ImmutableMap.<String, ForgeConfigSpec.DoubleValue>builder();
-        for (var target : DragonEggLootMod.BUILT_IN_CHANCES) {
-            var path = formatEggTargetAsPath(target.forBreed().getValue(), target.target());
-            var entry = configurator.comment(
+        ImmutableMap.Builder<String, ForgeConfigSpec.DoubleValue> chances = ImmutableMap.builder();
+        for (DragonEggLootMod.Target target : DragonEggLootMod.BUILT_IN_CHANCES) {
+            String path = formatEggTargetAsPath(target.forBreed().getValue(), target.target());
+            ForgeConfigSpec.DoubleValue entry = configurator.comment(
                             String.format("The chance that a %s egg appears in %s.", target.forBreed().getValue().getPath(), target.target().getPath()),
                             "0 = Never Appears, 1 = Guaranteed")
                     .defineInRange(path, target.chance(), 0, 1);
@@ -166,9 +166,9 @@ public class DMLConfig {
     }
 
     private static ImmutableMap<String, ForgeConfigSpec.IntValue> defineReproLimEntries(ForgeConfigSpec.Builder configurator) {
-        var lims = ImmutableMap.<String, ForgeConfigSpec.IntValue>builder();
-        for (var type : new RegistryKey[]{AETHER, END, FIRE, FOREST, GHOST, ICE, NETHER, WATER}) {
-            var path = type.getValue().getPath();
+        ImmutableMap.Builder<String, ForgeConfigSpec.IntValue> lims = ImmutableMap.builder();
+        for (RegistryKey<?> type : new RegistryKey[]{AETHER, END, FIRE, FOREST, GHOST, ICE, NETHER, WATER}) {
+            String path = type.getValue().getPath();
             lims.put(path, configurator.comment(
                             "-1 = No Limit, 0 = Cannot breed, 2 = Can breed only two times")
                     .defineInRange(path, TameableDragon.BASE_REPRO_LIMIT, -1, Integer.MAX_VALUE));

@@ -1,7 +1,7 @@
 package com.iafenvoy.dragonmounts;
 
 import com.iafenvoy.dragonmounts.client.DragonEggModel;
-import com.iafenvoy.dragonmounts.client.KeyMappings;
+import com.iafenvoy.dragonmounts.registry.DMKeyBindings;
 import com.iafenvoy.dragonmounts.client.MountControlsMessenger;
 import com.iafenvoy.dragonmounts.data.model.DragonModelPropertiesListener;
 import com.iafenvoy.dragonmounts.dragon.DragonSpawnEgg;
@@ -21,7 +21,7 @@ public class DragonMountsClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ForgeConfigRegistry.INSTANCE.register(DragonMounts.MOD_ID, ModConfig.Type.CLIENT, DMLConfig.CLIENT_SPEC);
-        KeyMappings.init();
+        DMKeyBindings.init();
         ColorProviderRegistry.ITEM.register(DragonSpawnEgg::getColor, DMItems.SPAWN_EGG);
         DMRenderers.registerRenderers();
         ClientTickEvents.END_CLIENT_TICK.register(MountControlsMessenger::tick);

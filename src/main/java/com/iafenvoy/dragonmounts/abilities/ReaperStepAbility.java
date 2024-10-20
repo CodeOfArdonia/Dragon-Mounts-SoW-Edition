@@ -29,32 +29,32 @@ public class ReaperStepAbility extends FootprintAbility implements Ability.Facto
 
     @Override
     protected void placeFootprint(TameableDragon dragon, BlockPos pos) {
-        var level = dragon.getWorld();
-        var steppingOn = level.getBlockState(pos);
+        World world = dragon.getWorld();
+        BlockState steppingOn = world.getBlockState(pos);
         if (steppingOn.isIn(PLANT_DEATH_TAG)) {
-            level.removeBlock(pos, false);
-            level.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, dragon.getSoundCategory(), 0.1f, 2f);
-            ((ServerWorld) level).spawnParticles(ParticleTypes.SOUL, pos.getX(), pos.getY(), pos.getZ(), 0, 0, 1, 0, 0.05);
+            world.removeBlock(pos, false);
+            world.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, dragon.getSoundCategory(), 0.1f, 2f);
+            if (world instanceof ServerWorld serverWorld)
+                serverWorld.spawnParticles(ParticleTypes.SOUL, pos.getX(), pos.getY(), pos.getZ(), 0, 0, 1, 0, 0.05);
 
-            var bs = (dragon.getRandom().nextDouble() < 0.05 ? Blocks.WITHER_ROSE : Blocks.DEAD_BUSH).getDefaultState();
-            level.setBlockState(pos, bs, Block.NOTIFY_ALL);
+            BlockState bs = (dragon.getRandom().nextDouble() < 0.05 ? Blocks.WITHER_ROSE : Blocks.DEAD_BUSH).getDefaultState();
+            world.setBlockState(pos, bs, Block.NOTIFY_ALL);
         } else if (steppingOn.isIn(PLANT_DESTRUCTION_TAG)) {
-            level.breakBlock(pos, false);
-            level.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, dragon.getSoundCategory(), 0.1f, 2f);
-            ((ServerWorld) level).spawnParticles(ParticleTypes.SOUL, pos.getX(), pos.getY(), pos.getZ(), 0, 0, 1, 0, 0.05);
+            world.breakBlock(pos, false);
+            world.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, dragon.getSoundCategory(), 0.1f, 2f);
+            if (world instanceof ServerWorld serverWorld)
+                serverWorld.spawnParticles(ParticleTypes.SOUL, pos.getX(), pos.getY(), pos.getZ(), 0, 0, 1, 0, 0.05);
 
-            var sticks = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(Items.STICK));
+            ItemEntity sticks = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(Items.STICK));
             sticks.setPickupDelay(40);
-            level.spawnEntity(sticks);
-        } else if ((steppingOn = level.getBlockState(pos = pos.down())).isIn(REAPER_TRANSFORM)) // todo: this isn't very customizable...
-        {
+            world.spawnEntity(sticks);
+        } else if ((steppingOn = world.getBlockState(pos = pos.down())).isIn(REAPER_TRANSFORM)) {// todo: this isn't very customizable...
             if (steppingOn.isOf(Blocks.GRASS_BLOCK))
-                destroyAndReplace(level, Blocks.DIRT.getDefaultState(), pos);
+                destroyAndReplace(world, Blocks.DIRT.getDefaultState(), pos);
             else if (steppingOn.isIn(BlockTags.SAND))
-                destroyAndReplace(level, Blocks.SOUL_SAND.getDefaultState(), pos);
+                destroyAndReplace(world, Blocks.SOUL_SAND.getDefaultState(), pos);
             else if (steppingOn.isIn(BlockTags.DIRT))
-                destroyAndReplace(level, Blocks.SOUL_SOIL.getDefaultState(), pos);
-
+                destroyAndReplace(world, Blocks.SOUL_SOIL.getDefaultState(), pos);
         }
     }
 
@@ -63,9 +63,9 @@ public class ReaperStepAbility extends FootprintAbility implements Ability.Facto
         return 0.025f;
     }
 
-    private static void destroyAndReplace(World level, BlockState state, BlockPos pos) {
-        level.breakBlock(pos, false);
-        level.setBlockState(pos, state, Block.NOTIFY_ALL);
+    private static void destroyAndReplace(World world, BlockState state, BlockPos pos) {
+        world.breakBlock(pos, false);
+        world.setBlockState(pos, state, Block.NOTIFY_ALL);
     }
 
     @Override

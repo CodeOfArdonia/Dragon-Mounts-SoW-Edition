@@ -1,4 +1,4 @@
-package com.iafenvoy.dragonmounts.client;
+package com.iafenvoy.dragonmounts.registry;
 
 import com.iafenvoy.dragonmounts.DMLConfig;
 import com.iafenvoy.dragonmounts.DragonMounts;
@@ -11,15 +11,13 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.function.Consumer;
-
 @Environment(EnvType.CLIENT)
-public class KeyMappings {
-    public static final KeyBinding FLIGHT_DESCENT_KEY = keymap("flight_descent", GLFW.GLFW_KEY_Z, "key.categories.movement");
-    public static final KeyBinding CAMERA_CONTROLS = keymap("camera_flight", GLFW.GLFW_KEY_F6, "key.categories.movement");
+public class DMKeyBindings {
+    public static final KeyBinding FLIGHT_DESCENT_KEY = keymap("flight_descent", GLFW.GLFW_KEY_Z);
+    public static final KeyBinding CAMERA_CONTROLS = keymap("camera_flight", GLFW.GLFW_KEY_F6);
 
-    private static KeyBinding keymap(String name, int defaultMapping, String category) {
-        return new KeyBinding(String.format("key.%s.%s", DragonMounts.MOD_ID, name), defaultMapping, category);
+    private static KeyBinding keymap(String name, int defaultMapping) {
+        return new KeyBinding(String.format("key.%s.%s", DragonMounts.MOD_ID, name), defaultMapping, "key.categories.movement");
     }
 
     public static void init() {

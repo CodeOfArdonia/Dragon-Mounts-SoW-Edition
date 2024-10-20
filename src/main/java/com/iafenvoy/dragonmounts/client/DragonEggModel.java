@@ -24,13 +24,17 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -46,9 +50,9 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 
     @Override
     public BakedModel bake(JsonUnbakedModel jsonUnbakedModel, Baker baker, Function<SpriteIdentifier, Sprite> spriteGetter, ModelBakeSettings modelState, ModelOverrideList overrides, Identifier modelLocation, boolean b) {
-        var baked = ImmutableMap.<String, BakedModel>builder();
-        for (var entry : this.models.entrySet()) {
-            var unbaked = entry.getValue();
+        ImmutableMap.Builder<String, BakedModel> baked = ImmutableMap.builder();
+        for (Map.Entry<String, JsonUnbakedModel> entry : this.models.entrySet()) {
+            JsonUnbakedModel unbaked = entry.getValue();
             unbaked.setParents(baker::getOrLoadModel);
             baked.put(entry.getKey(), unbaked.bake(baker, unbaked, spriteGetter, modelState, modelLocation, true));
         }
@@ -119,12 +123,12 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
         @Nullable
         @Override
         public BakedModel apply(BakedModel original, ItemStack stack, @Nullable ClientWorld level, @Nullable LivingEntity entity, int pSeed) {
-            var override = this.nested.apply(original, stack, level, entity, pSeed);
+            BakedModel override = this.nested.apply(original, stack, level, entity, pSeed);
             if (override != original) return override;
 
-            var tag = BlockItem.getBlockEntityNbt(stack);
+            NbtCompound tag = BlockItem.getBlockEntityNbt(stack);
             if (tag != null) {
-                var model = this.owner.models.get(tag.getString(HatchableEggBlock.NBT_BREED));
+                BakedModel model = this.owner.models.get(tag.getString(HatchableEggBlock.NBT_BREED));
                 if (model != null) return model;
             }
 
@@ -140,17 +144,17 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 
         @Override
         public DragonEggModel read(JsonObject jsonObject, JsonDeserializationContext deserializer) throws JsonParseException {
-            var models = ImmutableMap.<String, JsonUnbakedModel>builder();
-            var dir = "models/block/dragon_eggs";
-            var length = "models/".length();
-            var suffixLength = ".json".length();
-            for (var entry : MinecraftClient.getInstance().getResourceManager().findResources(dir, f -> f.getPath().endsWith(".json")).entrySet()) {
-                var rl = entry.getKey();
-                var path = rl.getPath();
+            ImmutableMap.Builder<String, JsonUnbakedModel> models = ImmutableMap.builder();
+            String dir = "models/block/dragon_eggs";
+            int length = "models/".length();
+            int suffixLength = ".json".length();
+            for (Map.Entry<Identifier, Resource> entry : MinecraftClient.getInstance().getResourceManager().findResources(dir, f -> f.getPath().endsWith(".json")).entrySet()) {
+                Identifier rl = entry.getKey();
+                String path = rl.getPath();
                 path = path.substring(length, path.length() - suffixLength);
-                var id = String.format("%s:%s", rl.getNamespace(), path.substring("block/dragon_eggs/".length(), path.length() - "_dragon_egg".length()));
+                String id = String.format("%s:%s", rl.getNamespace(), path.substring("block/dragon_eggs/".length(), path.length() - "_dragon_egg".length()));
 
-                try (var reader = entry.getValue().getReader()) {
+                try (BufferedReader reader = entry.getValue().getReader()) {
                     models.put(id, JsonUnbakedModel.deserialize(reader));
                 } catch (IOException e) {
                     throw new JsonParseException(e);

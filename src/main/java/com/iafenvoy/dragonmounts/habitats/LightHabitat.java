@@ -14,8 +14,8 @@ public record LightHabitat(int points, boolean below, int light) implements Habi
     ).apply(func, LightHabitat::new));
 
     @Override
-    public int getHabitatPoints(World level, BlockPos pos) {
-        int lightEmission = level.getLuminance(pos);
+    public int getHabitatPoints(World world, BlockPos pos) {
+        int lightEmission = world.getLuminance(pos);
         return (this.below ? lightEmission < this.light : lightEmission > this.light) ? this.points : 0;
     }
 

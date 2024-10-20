@@ -69,10 +69,10 @@ public class DragonModel extends EntityModel<TameableDragon> {
         this.tailHornRight = getNullableChild(this.tail, "right_tail_spike");
         this.tailHornLeft = getNullableChild(this.tail, "left_tail_spike");
 
-        var rightWingArm = root.getChild("right_wing_arm");
-        var leftWingArm = root.getChild("left_wing_arm");
-        var rightWingForearm = rightWingArm.getChild("right_wing_forearm");
-        var leftWingForearm = leftWingArm.getChild("left_wing_forearm");
+        ModelPart rightWingArm = root.getChild("right_wing_arm");
+        ModelPart leftWingArm = root.getChild("left_wing_arm");
+        ModelPart rightWingForearm = rightWingArm.getChild("right_wing_forearm");
+        ModelPart leftWingForearm = leftWingArm.getChild("left_wing_forearm");
 
         this.wingArms = new ModelPart[]{rightWingArm, leftWingArm};
         this.wingForearms = new ModelPart[]{rightWingForearm, leftWingForearm};
@@ -83,13 +83,10 @@ public class DragonModel extends EntityModel<TameableDragon> {
         }
 
         for (int i = 0; i < this.legs.length; i++) {
-            var right = i < 2;
-            var dirName = right ? "right_" : "left_";
-            var type = i % 2 == 0 ? "fore_" : "hind_";
-            var parts = new String[]{"thigh", "crus", "foot", "toe"};
-            var parent = root;
+            String[] parts = new String[]{"thigh", "crus", "foot", "toe"};
+            ModelPart parent = root;
             for (int j = 0; j < parts.length; j++)
-                parent = this.legs[i][j] = parent.getChild(dirName + type + parts[j]);
+                parent = this.legs[i][j] = parent.getChild((i < 2 ? "right_" : "left_") + (i % 2 == 0 ? "fore_" : "hind_") + parts[j]);
         }
 
         // initialize model proxies
@@ -201,25 +198,25 @@ public class DragonModel extends EntityModel<TameableDragon> {
     }
 
     private static void buildWing(ModelPartData root, boolean mirror) {
-        var direction = mirror ? "left_" : "right_";
+        String direction = mirror ? "left_" : "right_";
 
-        var wingArmCube = ModelPartBuilder.create().mirrored(mirror);
+        ModelPartBuilder wingArmCube = ModelPartBuilder.create().mirrored(mirror);
         centerMirroredBox(wingArmCube.uv(0, 152), mirror, -28, -3, -3, 28, 6, 6); // bone
         centerMirroredBox(wingArmCube.uv(116, 232), mirror, -28, 0, 2, 28, 0, 24); // skin
 
-        var foreArmCube = centerMirroredBox(ModelPartBuilder.create().mirrored(mirror).uv(0, 164), mirror, -48, -2, -2, 48, 4, 4); // bone
+        ModelPartBuilder foreArmCube = centerMirroredBox(ModelPartBuilder.create().mirrored(mirror).uv(0, 164), mirror, -48, -2, -2, 48, 4, 4); // bone
 
-        var shortSkinCube = ModelPartBuilder.create().mirrored(mirror);
+        ModelPartBuilder shortSkinCube = ModelPartBuilder.create().mirrored(mirror);
         centerMirroredBox(shortSkinCube.uv(0, 172), mirror, -70, -1, -1, 70, 2, 2); // bone
         centerMirroredBox(shortSkinCube.uv(-49, 176), mirror, -70, 0, 1, 70, 0, 48); // skin
-        var shortSkinPos = mirrorXPos(-47, 0, 0, mirror);
+        ModelTransform shortSkinPos = mirrorXPos(-47, 0, 0, mirror);
 
-        var lastFingerCube = ModelPartBuilder.create().mirrored(mirror);
+        ModelPartBuilder lastFingerCube = ModelPartBuilder.create().mirrored(mirror);
         centerMirroredBox(lastFingerCube.uv(0, 172), mirror, -70, -1, -1, 70, 2, 2); // bone
         centerMirroredBox(lastFingerCube.uv(-32, 224), mirror, -70, 0, 1, 70, 0, 32); // shortskin
 
-        var arm = root.addChild(direction + "wing_arm", wingArmCube, mirrorXPos(-10, 5, 4, mirror));
-        var foreArm = arm.addChild(direction + "wing_forearm", foreArmCube, mirrorXPos(-28, 0, 0, mirror));
+        ModelPartData arm = root.addChild(direction + "wing_arm", wingArmCube, mirrorXPos(-10, 5, 4, mirror));
+        ModelPartData foreArm = arm.addChild(direction + "wing_forearm", foreArmCube, mirrorXPos(-28, 0, 0, mirror));
         for (int j = 1; j < 4; j++) foreArm.addChild(direction + "wing_finger_" + j, shortSkinCube, shortSkinPos);
         foreArm.addChild(direction + "wing_finger_4", lastFingerCube, shortSkinPos);
     }
@@ -233,7 +230,7 @@ public class DragonModel extends EntityModel<TameableDragon> {
 
     private static void buildLeg(ModelPartData root, boolean hind, boolean thin, boolean mirror) {
         float baseLength = 26;
-        var baseName = (mirror ? "left_" : "right_") + (hind ? "hind_" : "fore_");
+        String baseName = (mirror ? "left_" : "right_") + (hind ? "hind_" : "fore_");
 
         // thigh variables
         float thighPosX = -11;

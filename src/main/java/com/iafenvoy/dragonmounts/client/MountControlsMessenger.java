@@ -1,7 +1,9 @@
 package com.iafenvoy.dragonmounts.client;
 
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.registry.DMKeyBindings;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.Text;
 
 /**
@@ -24,18 +26,16 @@ public class MountControlsMessenger {
     @SuppressWarnings("ConstantConditions")
     public static void tick(MinecraftClient client) {
         if (delay > 0) {
-            var player = client.player;
+            ClientPlayerEntity player = client.player;
             if (!(player.getVehicle() instanceof TameableDragon)) {
                 delay = 0;
                 return;
             }
-
             --delay;
-
             if (delay == 0)
                 player.sendMessage(Text.translatable("mount.dragon.vertical_controls",
                         MinecraftClient.getInstance().options.jumpKey.getBoundKeyLocalizedText(),
-                        KeyMappings.FLIGHT_DESCENT_KEY.getBoundKeyLocalizedText()), true);
+                        DMKeyBindings.FLIGHT_DESCENT_KEY.getBoundKeyLocalizedText()), true);
         }
     }
 }

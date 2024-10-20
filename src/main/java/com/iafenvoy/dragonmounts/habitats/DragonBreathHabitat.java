@@ -14,10 +14,8 @@ public enum DragonBreathHabitat implements Habitat {
     public static final Codec<DragonBreathHabitat> CODEC = Codec.unit(INSTANCE);
 
     @Override
-    public int getHabitatPoints(World level, BlockPos pos) {
-        return !level.getEntitiesByType(EntityType.AREA_EFFECT_CLOUD,
-                new Box(pos),
-                c -> c.getParticleType() == ParticleTypes.DRAGON_BREATH).isEmpty() ? 10 : 0;
+    public int getHabitatPoints(World world, BlockPos pos) {
+        return !world.getEntitiesByType(EntityType.AREA_EFFECT_CLOUD, new Box(pos), c -> c.getParticleType() == ParticleTypes.DRAGON_BREATH).isEmpty() ? 10 : 0;
     }
 
     @Override

@@ -16,8 +16,8 @@ public record BiomeHabitat(int points, TagKey<Biome> biomeTag) implements Habita
     ).apply(instance, BiomeHabitat::new));
 
     @Override
-    public int getHabitatPoints(World level, BlockPos pos) {
-        return level.getBiome(pos).isIn(this.biomeTag) ? this.points : 0;
+    public int getHabitatPoints(World world, BlockPos pos) {
+        return world.getBiome(pos).isIn(this.biomeTag) ? this.points : 0;
     }
 
     @Override

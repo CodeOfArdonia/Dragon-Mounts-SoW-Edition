@@ -15,10 +15,10 @@ public record PickyHabitat(List<Habitat> habitats) implements Habitat {
             .codec();
 
     @Override
-    public int getHabitatPoints(World level, BlockPos pos) {
+    public int getHabitatPoints(World world, BlockPos pos) {
         int points = 0;
-        for (var habitat : this.habitats) {
-            int i = habitat.getHabitatPoints(level, pos);
+        for (Habitat habitat : this.habitats) {
+            int i = habitat.getHabitatPoints(world, pos);
             if (i == 0) return 0; // ALL habitat conditions must be met. Otherwise, nope.
             points += i;
         }

@@ -14,10 +14,10 @@ public record HeightHabitat(int points, boolean below, int height) implements Ha
     ).apply(func, HeightHabitat::new));
 
     @Override
-    public int getHabitatPoints(World level, BlockPos pos) {
+    public int getHabitatPoints(World world, BlockPos pos) {
         int y = pos.getY();
         int max = this.height;
-        return (this.below ? (y < max && !level.isSkyVisible(pos)) : y > max) ? this.points : 0;
+        return (this.below ? (y < max && !world.isSkyVisible(pos)) : y > max) ? this.points : 0;
     }
 
     @Override

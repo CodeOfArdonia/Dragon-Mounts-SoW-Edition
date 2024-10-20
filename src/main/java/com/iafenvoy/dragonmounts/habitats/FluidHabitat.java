@@ -16,10 +16,8 @@ public record FluidHabitat(float multiplier, TagKey<Fluid> fluidType) implements
     ).apply(instance, FluidHabitat::new));
 
     @Override
-    public int getHabitatPoints(World level, BlockPos pos) {
-        return (int) (BlockPos.stream(pos.add(1, 1, 1), pos.add(-1, -1, -1))
-                .filter(p -> level.getFluidState(p).isIn(this.fluidType))
-                .count() * this.multiplier);
+    public int getHabitatPoints(World world, BlockPos pos) {
+        return (int) (BlockPos.stream(pos.add(1, 1, 1), pos.add(-1, -1, -1)).filter(p -> world.getFluidState(p).isIn(this.fluidType)).count() * this.multiplier);
     }
 
     @Override

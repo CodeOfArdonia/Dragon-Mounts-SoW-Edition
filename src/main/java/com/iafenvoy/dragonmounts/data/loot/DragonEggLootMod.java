@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -50,16 +51,14 @@ public class DragonEggLootMod extends LootModifier {
 
     @Override
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        var reg = context.getWorld().getRegistryManager();
-        var breed = BreedRegistry.registry(reg).get(this.id);
+        DynamicRegistryManager reg = context.getWorld().getRegistryManager();
+        DragonBreed breed = BreedRegistry.registry(reg).get(this.id);
         if (breed != null) {
-            var egg = HatchableEggBlock.Item.create(breed, reg);
-
+            ItemStack egg = HatchableEggBlock.Item.create(breed, reg);
             if (this.replaceFirst) generatedLoot.set(0, egg);
             else generatedLoot.add(egg);
         } else
             DragonMounts.LOGGER.error("Attempted to add a dragon egg to loot with unknown breed id: \"{}\"", this.id);
-
         return generatedLoot;
     }
 

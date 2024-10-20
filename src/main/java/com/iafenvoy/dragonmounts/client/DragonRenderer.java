@@ -57,10 +57,10 @@ public class DragonRenderer extends MobEntityRenderer<TameableDragon, DragonMode
 
     @SuppressWarnings("ConstantConditions")
     private DragonModel getModel(TameableDragon dragon) {
-        var breed = dragon.getBreed();
+        DragonBreed breed = dragon.getBreed();
         if (breed == null) return this.defaultModel;
 
-        var selected = this.modelCache.get(breed.id(MinecraftClient.getInstance().world.getRegistryManager()));
+        DragonModel selected = this.modelCache.get(breed.id(MinecraftClient.getInstance().world.getRegistryManager()));
         if (selected == null) return this.defaultModel;
 
         return selected;
@@ -89,8 +89,8 @@ public class DragonRenderer extends MobEntityRenderer<TameableDragon, DragonMode
     @Override
     protected void setupTransforms(TameableDragon dragon, MatrixStack ps, float age, float yaw, float partials) {
         super.setupTransforms(dragon, ps, age, yaw, partials);
-        var animator = dragon.getAnimator();
-        var scale = dragon.getScaleFactor();
+        DragonAnimator animator = dragon.getAnimator();
+        float scale = dragon.getScaleFactor();
         ps.scale(scale, scale, scale);
         ps.translate(animator.getModelOffsetX(), animator.getModelOffsetY(), animator.getModelOffsetZ());
         ps.translate(0, 1.5, 0.5); // change rotation point
@@ -105,8 +105,8 @@ public class DragonRenderer extends MobEntityRenderer<TameableDragon, DragonMode
     }
 
     private Map<Identifier, DragonModel> bakeModels(EntityRendererFactory.Context bakery) {
-        var builder = ImmutableMap.<Identifier, DragonModel>builder();
-        for (var entry : DragonModelPropertiesListener.INSTANCE.pollDefinitions().entrySet())
+        ImmutableMap.Builder<Identifier, DragonModel> builder = ImmutableMap.builder();
+        for (Map.Entry<Identifier, EntityModelLayer> entry : DragonModelPropertiesListener.INSTANCE.pollDefinitions().entrySet())
             builder.put(entry.getKey(), new DragonModel(bakery.getPart(entry.getValue())));
         return builder.build();
     }
@@ -124,7 +124,7 @@ public class DragonRenderer extends MobEntityRenderer<TameableDragon, DragonMode
         @Override
         public void render(MatrixStack pMatrixStack, VertexConsumerProvider buffer, int pPackedLight, TameableDragon dragon, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
             if (dragon.deathTime == 0) {
-                var type = CustomRenderTypes.glow(DragonRenderer.this.getTextureForLayer(dragon.getBreed(), LAYER_GLOW));
+                RenderLayer type = CustomRenderTypes.glow(DragonRenderer.this.getTextureForLayer(dragon.getBreed(), LAYER_GLOW));
                 DragonRenderer.this.model.render(pMatrixStack, buffer.getBuffer(type), pPackedLight, OverlayTexture.DEFAULT_UV, 1f, 1f, 1f, 1f);
             }
         }
@@ -140,7 +140,7 @@ public class DragonRenderer extends MobEntityRenderer<TameableDragon, DragonMode
         @Override
         public void render(MatrixStack ps, VertexConsumerProvider buffer, int light, TameableDragon dragon, float limbSwing, float limbSwingAmount, float partials, float age, float yaw, float pitch) {
             if (dragon.deathTime > 0) {
-                var delta = dragon.deathTime / (float) dragon.getMaxDeathTime();
+                float delta = dragon.deathTime / (float) dragon.getMaxDeathTime();
                 DragonRenderer.this.model.render(ps, buffer.getBuffer(CustomRenderTypes.DISSOLVE), light, OverlayTexture.DEFAULT_UV, 1f, 1f, 1f, delta);
                 DragonRenderer.this.model.render(ps, buffer.getBuffer(RenderLayer.getEntityDecal(this.getTexture(dragon))), light, OverlayTexture.getUv(0, true), 1f, 1f, 1f, 1f);
             }
@@ -160,7 +160,6 @@ public class DragonRenderer extends MobEntityRenderer<TameableDragon, DragonMode
             return GLOW_FUNC.apply(texture);
         }
 
-        @SuppressWarnings("DataFlowIssue")
         private CustomRenderTypes() {
             // dummy
             super(null, null, null, 0, false, true, null, null);

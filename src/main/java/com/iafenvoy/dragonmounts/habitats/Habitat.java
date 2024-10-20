@@ -14,7 +14,18 @@ import java.util.function.Function;
 public interface Habitat {
     Map<Identifier, Codec<? extends Habitat>> REGISTRY = new HashMap<>();
 
-    Codec<Habitat> CODEC = Identifier.CODEC.dispatch(Habitat::type, REGISTRY::get);
+    Codec<Habitat> EMPTY = Codec.unit(new Habitat() {
+        @Override
+        public int getHabitatPoints(World world, BlockPos pos) {
+            return 0;
+        }
+
+        @Override
+        public Identifier type() {
+            return Identifier.of(DragonMounts.MOD_ID, "");
+        }
+    });
+    Codec<Habitat> CODEC = Identifier.CODEC.dispatch(Habitat::type, id -> REGISTRY.getOrDefault(id, EMPTY));
 
     Identifier PICKY = reg("picky", PickyHabitat.CODEC);
     Identifier BIOMES = reg("biome", BiomeHabitat.CODEC);
@@ -41,7 +52,7 @@ public interface Habitat {
         return Codec.FLOAT.optionalFieldOf("point_multiplier", defaultTo).forGetter(getter);
     }
 
-    int getHabitatPoints(World level, BlockPos pos);
+    int getHabitatPoints(World world, BlockPos pos);
 
     Identifier type();
 }

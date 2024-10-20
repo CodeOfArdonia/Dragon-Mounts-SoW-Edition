@@ -4,6 +4,7 @@ import com.iafenvoy.dragonmounts.DragonMounts;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
@@ -11,6 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class HotFeetAbility extends FootprintAbility implements Ability.Factory<HotFeetAbility> {
     public static final HotFeetAbility INSTANCE = new HotFeetAbility();
@@ -20,12 +22,12 @@ public class HotFeetAbility extends FootprintAbility implements Ability.Factory<
 
     @Override
     protected void placeFootprint(TameableDragon dragon, BlockPos pos) {
-        var level = dragon.getWorld();
-        var steppingOn = level.getBlockState(pos);
-        if (steppingOn.isIn(BURNABLES_TAG)) {
-            level.removeBlock(pos, false);
-            level.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, dragon.getSoundCategory(), 0.1f, 2f);
-            ((ServerWorld) level).spawnParticles(ParticleTypes.LARGE_SMOKE, pos.getX(), pos.getY(), pos.getZ(), 0, 0, 1, 0, 0.05);
+        World world = dragon.getWorld();
+        BlockState steppingOn = world.getBlockState(pos);
+        if (steppingOn.isIn(BURNABLES_TAG)&&world instanceof ServerWorld serverWorld) {
+            world.removeBlock(pos, false);
+            world.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, dragon.getSoundCategory(), 0.1f, 2f);
+            serverWorld.spawnParticles(ParticleTypes.LARGE_SMOKE, pos.getX(), pos.getY(), pos.getZ(), 0, 0, 1, 0, 0.05);
         }
     }
 

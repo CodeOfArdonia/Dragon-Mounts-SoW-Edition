@@ -32,10 +32,10 @@ public class DragonModelPropertiesListener extends JsonDataLoader implements Ide
     @Override
     protected void apply(Map<Identifier, JsonElement> map, ResourceManager pResourceManager, Profiler pProfiler) {
         this.definitions.clear();
-        for (var entry : map.entrySet()) {
-            var breedId = entry.getKey();
-            var properties = DragonModel.Properties.CODEC.parse(JsonOps.INSTANCE, entry.getValue()).getOrThrow(false, Util.addPrefix("Unable to parse Dragon Breed Properties: " + breedId, DragonMounts.LOGGER::error));
-            var modelLoc = new EntityModelLayer(DragonRenderer.MODEL_LOCATION.getId(), breedId.toString());
+        for (Map.Entry<Identifier, JsonElement> entry : map.entrySet()) {
+            Identifier breedId = entry.getKey();
+            DragonModel.Properties properties = DragonModel.Properties.CODEC.parse(JsonOps.INSTANCE, entry.getValue()).getOrThrow(false, Util.addPrefix("Unable to parse Dragon Breed Properties: " + breedId, DragonMounts.LOGGER::error));
+            EntityModelLayer modelLoc = new EntityModelLayer(DragonRenderer.MODEL_LOCATION.getId(), breedId.toString());
             EntityModelLayerRegistry.registerModelLayer(modelLoc, () -> DragonModel.createBodyLayer(properties));
             this.definitions.put(entry.getKey(), modelLoc);
         }
@@ -45,7 +45,7 @@ public class DragonModelPropertiesListener extends JsonDataLoader implements Ide
      * Gets and clears this listener's model definitions.
      */
     public Map<Identifier, EntityModelLayer> pollDefinitions() {
-        var map = Map.copyOf(this.definitions);
+        Map<Identifier, EntityModelLayer> map = Map.copyOf(this.definitions);
         this.definitions.clear();
         return map;
     }
