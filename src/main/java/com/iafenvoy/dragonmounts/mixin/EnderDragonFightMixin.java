@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(EnderDragonFight.class)
-public class ReplenishDragonEggMixin {
+public class EnderDragonFightMixin {
     /**
      * Purpose: To implement a way to replenish dragon eggs after death of the ender dragon
      * <br>
@@ -18,6 +18,6 @@ public class ReplenishDragonEggMixin {
      */
     @Redirect(method = "dragonKilled", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/boss/dragon/EnderDragonFight;previouslyKilled:Z", opcode = Opcodes.GETFIELD))
     private boolean dragonmounts_replenishDragonEgg(EnderDragonFight instance) {
-        return !(!instance.hasPreviouslyKilled() || DMLConfig.replenishEggs()); // return the inverse of what we want because the target check inverts the result... yeah.
+        return instance.hasPreviouslyKilled() && !DMLConfig.replenishEggs(); // return the inverse of what we want because the target check inverts the result... yeah.
     }
 }

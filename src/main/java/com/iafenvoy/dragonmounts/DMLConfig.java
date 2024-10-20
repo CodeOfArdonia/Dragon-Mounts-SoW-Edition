@@ -183,7 +183,7 @@ public class DMLConfig {
     }
 
     private static void defineCameraOffsetEntries(ForgeConfigSpec.Builder configurator) {
-        var perspectiveName = "back";
+        String perspectiveName = "back";
         for (ForgeConfigSpec.DoubleValue[] perspective : CAMERA_OFFSETS) {
             configurator.push("third_person_" + perspectiveName);
             perspectiveName = "front";

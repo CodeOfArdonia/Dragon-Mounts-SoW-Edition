@@ -142,8 +142,6 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
         if (!pState.get(HATCHING)) {
             if (!pLevel.isClient) {
                 pLevel.setBlockState(pPos, pState.with(HATCHING, true), Block.NOTIFY_ALL);
-//                if(pLevel.getBlockEntity(pPos) instanceof HatchableEggBlockEntity blockEntity)
-//                    blockEntity.getTransition().begin();
                 return ActionResult.CONSUME;
             }
             return ActionResult.SUCCESS;
@@ -261,7 +259,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
 
         baby.setBreed(data.getBreed());
         baby.setBaby(true);
-        baby.setPos(pos.getX(), pos.getY(), pos.getZ());
+        baby.setPos(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
         baby.setCustomName(data.getCustomName());
         world.spawnEntity(baby);
     }
@@ -274,7 +272,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
         double oy = 0;
         double oz = 0;
 
-        var particle = getHatchingParticles(breed, random);
+        ParticleEffect particle = getHatchingParticles(breed, random);
         if (particle.getType() == ParticleTypes.DUST) py = pos.getY() + (random.nextDouble() - 0.5) + 1;
         else if (particle.getType() == ParticleTypes.PORTAL) {
             ox = (random.nextDouble() - 0.5) * 2;
@@ -346,7 +344,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
 
         @Override
         public Text getName(ItemStack stack) {
-            var tag = BlockItem.getBlockEntityNbt(stack);
+            NbtCompound tag = BlockItem.getBlockEntityNbt(stack);
             if (tag != null)
                 return Text.translatable(String.join(".", this.getTranslationKey(), tag.getString(NBT_BREED).replace(':', '.')));
             return super.getName(stack);
@@ -355,7 +353,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
         @Override
         public ActionResult useOnEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
             if (player.getAbilities().creativeMode && target instanceof TameableDragon dragon) {
-                var tag = BlockItem.getBlockEntityNbt(stack);
+                NbtCompound tag = BlockItem.getBlockEntityNbt(stack);
                 if (tag != null) {
                     dragon.setBreed(BreedRegistry.get(tag.getString(TameableDragon.NBT_BREED), player.getWorld().getRegistryManager()));
                     return ActionResult.success(player.getWorld().isClient);
@@ -366,7 +364,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
 
         @Override
         public ActionResult place(ItemPlacementContext context) {
-            var result = super.place(context);
+            ActionResult result = super.place(context);
             if (context.getWorld().getBlockEntity(context.getBlockPos()) instanceof HatchableEggBlockEntity e) {
                 NbtCompound blockEntityTag = context.getStack().getSubNbt("BlockEntityTag");
                 if (context.getWorld() instanceof ServerWorld serverWorld && blockEntityTag != null && blockEntityTag.contains(NBT_BREED, NbtElement.STRING_TYPE)) {

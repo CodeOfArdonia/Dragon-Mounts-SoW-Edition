@@ -20,8 +20,6 @@ public class DragonEggBlockEntityRenderer implements BlockEntityRenderer<Hatchab
     @Override
     public void render(HatchableEggBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
-//        matrices.translate(-0.005f, -0.005f, -0.005f);
-//        matrices.scale(1.01f, 1.01f, 1.01f);
         DragonBreed breed = entity.getBreed();
         MinecraftClient client = MinecraftClient.getInstance();
         BakedModel model = DragonEggModel.getModel(breed != null && client.world != null ? breed.id(client.world.getRegistryManager()).toString() : "");

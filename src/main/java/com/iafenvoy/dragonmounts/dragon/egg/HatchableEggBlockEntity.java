@@ -167,7 +167,7 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
                     HatchableEggBlockEntity.this.getWorld().updateListeners(HatchableEggBlockEntity.this.getPos(), HatchableEggBlockEntity.this.getCachedState(), HatchableEggBlockEntity.this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);
                 }
                 if (HatchableEggBlockEntity.this.getWorld().isClient) {
-                    for (var i = 0; i < (BREED_TRANSITION_TIME - this.transitionTime) * 0.25; i++) {
+                    for (int i = 0; i < (BREED_TRANSITION_TIME - this.transitionTime) * 0.25; i++) {
                         BlockPos pos = HatchableEggBlockEntity.this.getPos();
                         double px = pos.getX() + random.nextDouble();
                         double py = pos.getY() + random.nextDouble();

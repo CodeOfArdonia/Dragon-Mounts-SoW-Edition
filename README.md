@@ -10,13 +10,10 @@ Since this mod is used for my Songs of War RPG modpack, so this mod won't port t
 modpack update.
 
 ## Features
-
 - Make dragon eggs hatchable.
 - 8 types of dragons, also tameable!
 - Data driven system to make your own dragons.
 
 ## Special Thanks
-
-- BarracudaATA - Original project.
+- BarracudaATA: Original project.
 - kay9: Author of `Dragon Mounts: Legacy`.
-

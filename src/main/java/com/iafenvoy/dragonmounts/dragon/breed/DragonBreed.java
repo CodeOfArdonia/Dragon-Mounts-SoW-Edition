@@ -13,6 +13,7 @@ import com.iafenvoy.dragonmounts.util.DMLUtil;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -72,8 +73,8 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
 
     public void initialize(TameableDragon dragon) {
         this.applyAttributes(dragon);
-        for (var factory : this.abilityTypes()) {
-            var instance = factory.create();
+        for (Ability.Factory<Ability> factory : this.abilityTypes()) {
+            Ability instance = factory.create();
             dragon.getAbilities().add(instance);
             instance.initialize(dragon);
         }
@@ -108,9 +109,9 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
 
     private void cleanAttributes(TameableDragon dragon) {
         float healthFrac = dragon.getHealthFraction(); // in case max health is changed
-        var defaults = DefaultAttributeRegistry.get(DMEntities.DRAGON);
+        DefaultAttributeContainer defaults = DefaultAttributeRegistry.get(DMEntities.DRAGON);
         this.attributes().forEach((att, value) -> {
-            var instance = dragon.getAttributeInstance(att);
+            EntityAttributeInstance instance = dragon.getAttributeInstance(att);
             if (instance != null) {
                 instance.clearModifiers();
                 instance.setBaseValue(defaults.getBaseValue(att));

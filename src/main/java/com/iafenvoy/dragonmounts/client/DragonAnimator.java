@@ -445,7 +445,7 @@ public class DragonAnimator {
 
             if (model.tailHornRight != null) {
                 // display horns near the tip
-                var atIndex = i > model.tailProxy.length - 7 && i < model.tailProxy.length - 3;
+                boolean atIndex = i > model.tailProxy.length - 7 && i < model.tailProxy.length - 3;
                 model.tailHornLeft.visible = model.tailHornRight.visible = atIndex;
             }
 
@@ -486,10 +486,10 @@ public class DragonAnimator {
         // 2 - front leg, left side
         // 3 - hind leg, left side
         for (int i = 0; i < model.legs.length; i++) {
-            var thigh = model.legs[i][0];
-            var crus = model.legs[i][1];
-            var foot = model.legs[i][2];
-            var toe = model.legs[i][3];
+            ModelPart thigh = model.legs[i][0];
+            ModelPart crus = model.legs[i][1];
+            ModelPart foot = model.legs[i][2];
+            ModelPart toe = model.legs[i][3];
 
             thigh.pivotZ = (i % 2 == 0) ? 4 : 46;
 

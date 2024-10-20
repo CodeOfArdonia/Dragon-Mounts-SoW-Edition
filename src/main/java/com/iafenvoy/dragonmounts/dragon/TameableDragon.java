@@ -48,6 +48,7 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -189,7 +190,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         compound.putInt(NBT_REPRO_COUNT, this.reproCount);
         if (this.getBreed() != null) {// breed is not read by the time the packet is being sent...
             compound.putString(NBT_BREED, this.getBreed().id(this.getWorld().getRegistryManager()).toString());
-            for (var ability : this.getAbilities()) ability.write(this, compound);
+            for (Ability ability : this.getAbilities()) ability.write(this, compound);
         }
     }
 
@@ -527,7 +528,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
             return;
         }
         // override sound type if the top block is snowy
-        var soundType = state.getSoundGroup();
+        BlockSoundGroup soundType = state.getSoundGroup();
         if (this.getWorld().getBlockState(entityPos.up()).getBlock() == Blocks.SNOW)
             soundType = Blocks.SNOW.getSoundGroup(state);
         // play stomping for bigger dragons
@@ -621,7 +622,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
      */
     @Override
     public float getScaleFactor() {
-        var mod = this.getBreed() == null ? 1f : this.getBreed().sizeModifier();
+        float mod = this.getBreed() == null ? 1f : this.getBreed().sizeModifier();
         return (0.33f + (0.67f * this.getAgeProgress())) * mod;
     }
 
@@ -804,7 +805,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     @Override
     protected void updatePassengerPosition(Entity ridden, PositionUpdater pCallback) {
         if (this.hasPassenger(ridden)) {
-            var rePos = new Vec3d(0, this.getMountedHeightOffset() + ridden.getHeightOffset(), this.getScaleFactor())
+            Vec3d rePos = new Vec3d(0, this.getMountedHeightOffset() + ridden.getHeightOffset(), this.getScaleFactor())
                     .rotateY((float) Math.toRadians(-this.bodyYaw))
                     .add(this.getPos());
             pCallback.accept(ridden, rePos.x, rePos.y, rePos.z);
@@ -857,8 +858,8 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
 
     @Override
     public EntityDimensions getDimensions(EntityPose poseIn) {
-        var height = this.isInSittingPose() ? 2.15f : BASE_HEIGHT;
-        var scale = this.getScaleFactor();
+        float height = this.isInSittingPose() ? 2.15f : BASE_HEIGHT;
+        float scale = this.getScaleFactor();
         return new EntityDimensions(BASE_WIDTH * scale, height * scale, false);
     }
 
@@ -926,7 +927,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
 
     @Override
     public void setBaby(boolean baby) {
-        var growth = -BASE_GROWTH_TIME;
+        int growth = -BASE_GROWTH_TIME;
         if (this.getBreed() != null) growth = -this.getBreed().growthTime();
         this.setBreedingAge(baby ? growth : 0);
         this.dataTracker.set(DATA_AGE, this.breedingAge);
@@ -963,7 +964,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     @Override
     protected void applyMovementEffects(BlockPos pos) {
         super.applyMovementEffects(pos);
-        for (var ability : this.getAbilities()) ability.onMove(this);
+        for (Ability ability : this.getAbilities()) ability.onMove(this);
     }
 
     @Override
