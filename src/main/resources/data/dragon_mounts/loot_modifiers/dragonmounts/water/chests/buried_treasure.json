@@ -2,7 +2,7 @@
   "type": "dragon_mounts:dragon_egg_loot",
   "conditions": [
     {
-      "condition": "forge:loot_table_id",
+      "condition": "porting_lib:loot_table_id",
       "loot_table_id": "minecraft:chests/buried_treasure"
     },
     {
