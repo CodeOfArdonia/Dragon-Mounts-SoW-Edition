@@ -7,7 +7,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -15,7 +14,7 @@ import net.minecraft.util.Identifier;
 import java.util.function.Function;
 
 public class DMBlocks {
-    public static final Block EGG_BLOCK = register("dragon_egg", new HatchableEggBlock(), block -> new BlockItem(block, new Item.Settings()));
+    public static final Block EGG_BLOCK = register("dragon_egg", new HatchableEggBlock(), HatchableEggBlock.Item::new);
     public static final BlockEntityType<HatchableEggBlockEntity> EGG_BLOCK_ENTITY = register("dragon_egg", BlockEntityType.Builder.create(HatchableEggBlockEntity::new, EGG_BLOCK).build(null));
 
     private static <T extends Block> T register(String id, T block, Function<T, BlockItem> itemFunction) {

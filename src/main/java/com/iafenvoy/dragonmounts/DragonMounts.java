@@ -10,6 +10,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.world.ServerWorld;
@@ -18,6 +19,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.config.ModConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
 
 public class DragonMounts implements ModInitializer {
     public static final String MOD_ID = "dragon_mounts";
@@ -36,10 +39,10 @@ public class DragonMounts implements ModInitializer {
         UseBlockCallback.EVENT.register((player, world, hand, blockHitResult) -> {
             BlockPos pos = blockHitResult.getBlockPos();
             if (DMLConfig.allowEggOverride() && world.getBlockState(pos).isOf(Blocks.DRAGON_EGG)) {
-                var end = BreedRegistry.registry(world.getRegistryManager()).getOrEmpty(DragonBreed.BuiltIn.END);
+                Optional<DragonBreed> end = BreedRegistry.registry(world.getRegistryManager()).getOrEmpty(DragonBreed.BuiltIn.END);
                 if (end.isPresent()) {
                     if (world instanceof ServerWorld serverWorld) {
-                        var state = DMBlocks.EGG_BLOCK.getDefaultState().with(HatchableEggBlock.HATCHING, true);
+                        BlockState state = DMBlocks.EGG_BLOCK.getDefaultState().with(HatchableEggBlock.HATCHING, true);
                         HatchableEggBlock.place(serverWorld, pos, state, end.get());
                     }
                     return ActionResult.SUCCESS;

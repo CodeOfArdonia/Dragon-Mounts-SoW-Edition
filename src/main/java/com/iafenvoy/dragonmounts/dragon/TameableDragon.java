@@ -31,6 +31,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -684,6 +685,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
      */
     @Override
     public boolean damage(DamageSource src, float par2) {
+        if (src.isOf(DamageTypes.IN_WALL)) return false;
         if (this.isInvulnerableTo(src)) return false;
         // don't just sit there!
         this.setSitting(false);
@@ -746,7 +748,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
                 p2Name = StringUtils.capitalize(p2Name);
                 babyName = this.getRandom().nextBoolean() ? p1Name + p2Name : p2Name + p1Name;
             }
-            egg.setCustomName(Text.literal(babyName));
+            if (egg != null) egg.setCustomName(Text.literal(babyName));
         }
         // increase reproduction counter
         this.addReproCount();

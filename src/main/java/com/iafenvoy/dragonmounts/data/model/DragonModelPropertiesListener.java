@@ -6,8 +6,8 @@ import com.iafenvoy.dragonmounts.DragonMounts;
 import com.iafenvoy.dragonmounts.client.DragonModel;
 import com.iafenvoy.dragonmounts.client.DragonRenderer;
 import com.mojang.serialization.JsonOps;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.fabricmc.fabric.impl.client.rendering.EntityModelLayerImpl;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
@@ -20,9 +20,7 @@ import java.util.Map;
 
 public class DragonModelPropertiesListener extends JsonDataLoader implements IdentifiableResourceReloadListener {
     public static final DragonModelPropertiesListener INSTANCE = new DragonModelPropertiesListener();
-
     private static final String FOLDER = "models/entity/dragon/breed/properties";
-
     private final Map<Identifier, EntityModelLayer> definitions = new HashMap<>(3);
 
     public DragonModelPropertiesListener() {
@@ -36,7 +34,7 @@ public class DragonModelPropertiesListener extends JsonDataLoader implements Ide
             Identifier breedId = entry.getKey();
             DragonModel.Properties properties = DragonModel.Properties.CODEC.parse(JsonOps.INSTANCE, entry.getValue()).getOrThrow(false, Util.addPrefix("Unable to parse Dragon Breed Properties: " + breedId, DragonMounts.LOGGER::error));
             EntityModelLayer modelLoc = new EntityModelLayer(DragonRenderer.MODEL_LOCATION.getId(), breedId.toString());
-            EntityModelLayerRegistry.registerModelLayer(modelLoc, () -> DragonModel.createBodyLayer(properties));
+            EntityModelLayerImpl.PROVIDERS.put(modelLoc, () -> DragonModel.createBodyLayer(properties));
             this.definitions.put(entry.getKey(), modelLoc);
         }
     }

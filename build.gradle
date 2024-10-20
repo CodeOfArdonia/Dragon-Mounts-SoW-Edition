@@ -35,9 +35,6 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // Uranus
-    modImplementation "maven.modrinth:uranus:MSGUcQEI"
-
     modImplementation(include("maven.modrinth:forge-config-api-port:CtENDTlF"))
     modImplementation(include("io.github.fabricators_of_create.Porting-Lib:loot:2.3.4+1.20.1"))
     modImplementation(include("io.github.fabricators_of_create.Porting-Lib:models:2.3.4+1.20.1"))

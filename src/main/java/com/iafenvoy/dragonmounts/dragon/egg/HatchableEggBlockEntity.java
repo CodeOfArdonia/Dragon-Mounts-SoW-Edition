@@ -1,18 +1,21 @@
 package com.iafenvoy.dragonmounts.dragon.egg;
 
 import com.google.common.base.Suppliers;
+import com.iafenvoy.dragonmounts.Static;
 import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.habitats.Habitat;
 import com.iafenvoy.dragonmounts.registry.DMBlocks;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.DustParticleEffect;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
@@ -71,12 +74,6 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
         return tag;
     }
 
-    @Nullable
-    @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
-    }
-
     /**
      * This should be guarded with {@link HatchableEggBlockEntity#hasBreed()}!!
      * There is no way proper way to resolve a random breed in the mess that is
@@ -91,6 +88,12 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
 
     public void setBreed(Supplier<DragonBreed> breed) {
         this.breed = breed;
+        this.markDirty();
+        if (this.world instanceof ServerWorld serverWorld && this.breed.get() != null) {
+            PacketByteBuf buf = PacketByteBufs.create().writeBlockPos(this.pos).writeString(this.breed.get().id(serverWorld.getRegistryManager()).toString());
+            for (ServerPlayerEntity player : serverWorld.getServer().getPlayerManager().getPlayerList())
+                ServerPlayNetworking.send(player, Static.DRAGON_EGG_TYPE_SYNC, buf);
+        }
     }
 
     public boolean hasBreed() {
@@ -117,8 +120,8 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
     }
 
     @SuppressWarnings({"ConstantConditions", "unused"}) // guarded
-    public void tick(World pLevel, BlockPos pPos, BlockState pState) {
-        if (!pLevel.isClient() && !this.hasBreed()) {// at this point we may not receive a breed; resolve a random one.
+    public void tick(World world, BlockPos pos, BlockState state) {
+        if (!world.isClient && !this.hasBreed()) {// at this point we may not receive a breed; resolve a random one.
             DragonBreed newBreed = BreedRegistry.getRandom(this.getWorld().getRegistryManager(), this.getWorld().getRandom());
             this.setBreed(() -> newBreed);
             this.getWorld().updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);

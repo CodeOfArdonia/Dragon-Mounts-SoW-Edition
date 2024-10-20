@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -42,6 +43,7 @@ import java.util.function.Supplier;
  * A dynamic BakedModel which returns quads based on the given breed of the tile entity.
  */
 public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
+    private static final Map<String, BakedModel> BAKED = new HashMap<>();
     private final ImmutableMap<String, JsonUnbakedModel> models;
 
     public DragonEggModel(ImmutableMap<String, JsonUnbakedModel> models) {
@@ -50,18 +52,20 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 
     @Override
     public BakedModel bake(JsonUnbakedModel jsonUnbakedModel, Baker baker, Function<SpriteIdentifier, Sprite> spriteGetter, ModelBakeSettings modelState, ModelOverrideList overrides, Identifier modelLocation, boolean b) {
-        ImmutableMap.Builder<String, BakedModel> baked = ImmutableMap.builder();
         for (Map.Entry<String, JsonUnbakedModel> entry : this.models.entrySet()) {
             JsonUnbakedModel unbaked = entry.getValue();
             unbaked.setParents(baker::getOrLoadModel);
-            baked.put(entry.getKey(), unbaked.bake(baker, unbaked, spriteGetter, modelState, modelLocation, true));
+            BAKED.put(entry.getKey(), unbaked.bake(baker, unbaked, spriteGetter, modelState, modelLocation, true));
         }
-        return new Baked(baked.build(), overrides);
+        return new Baked(ImmutableMap.copyOf(BAKED), overrides);
+    }
+
+    public static BakedModel getModel(String id) {
+        return BAKED.getOrDefault(id, MinecraftClient.getInstance().getBlockRenderManager().getModel(Blocks.DRAGON_EGG.getDefaultState()));
     }
 
     public static class Baked implements BakedModel {
         private static final Supplier<BakedModel> FALLBACK = Suppliers.memoize(() -> MinecraftClient.getInstance().getBlockRenderManager().getModel(Blocks.DRAGON_EGG.getDefaultState()));
-
         private final ImmutableMap<String, BakedModel> models;
         private final ModelOverrideList overrides;
 
