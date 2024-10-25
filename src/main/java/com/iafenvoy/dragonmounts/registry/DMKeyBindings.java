@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.registry;
 
-import com.iafenvoy.dragonmounts.DMLConfig;
+import com.iafenvoy.dragonmounts.config.DMConfig;
 import com.iafenvoy.dragonmounts.DragonMounts;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
 import net.fabricmc.api.EnvType;
@@ -25,8 +25,8 @@ public class DMKeyBindings {
         KeyBindingRegistryImpl.registerKeyBinding(CAMERA_CONTROLS);
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (CAMERA_CONTROLS.wasPressed() && client.player != null && client.player.getVehicle() instanceof TameableDragon d) {
-                DMLConfig.CAMERA_DRIVEN_FLIGHT.set(!DMLConfig.cameraDrivenFlight());
-                client.player.sendMessage(Text.translatable("mount.dragon.camera_controls." + (DMLConfig.cameraDrivenFlight() ? "enabled" : "disabled"), d.getDisplayName()), true);
+                DMConfig.getClientConfig().cameraDrivenFlight ^= true;
+                client.player.sendMessage(Text.translatable("mount.dragon.camera_controls." + (DMConfig.getClientConfig().cameraDrivenFlight ? "enabled" : "disabled"), d.getDisplayName()), true);
             }
         });
     }

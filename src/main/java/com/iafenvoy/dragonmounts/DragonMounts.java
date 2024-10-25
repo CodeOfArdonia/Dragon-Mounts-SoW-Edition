@@ -1,11 +1,15 @@
 package com.iafenvoy.dragonmounts;
 
+import com.iafenvoy.dragonmounts.config.DMConfig;
 import com.iafenvoy.dragonmounts.data.CrossBreedingManager;
+import com.iafenvoy.dragonmounts.loot.LootProcessor;
 import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.dragon.egg.HatchableEggBlock;
-import com.iafenvoy.dragonmounts.registry.*;
-import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
+import com.iafenvoy.dragonmounts.registry.DMBlocks;
+import com.iafenvoy.dragonmounts.registry.DMEntities;
+import com.iafenvoy.dragonmounts.registry.DMItems;
+import com.iafenvoy.dragonmounts.registry.DMSounds;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
@@ -16,7 +20,6 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.config.ModConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,17 +31,15 @@ public class DragonMounts implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        ForgeConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.COMMON, DMLConfig.COMMON_SPEC);
         DMBlocks.init();
         DMEntities.init();
         DMItems.init();
-        DMLoots.init();
         DMSounds.init();
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(CrossBreedingManager.INSTANCE);
         DynamicRegistries.registerSynced(BreedRegistry.REGISTRY_KEY, DragonBreed.CODEC, DragonBreed.NETWORK_CODEC);
         UseBlockCallback.EVENT.register((player, world, hand, blockHitResult) -> {
             BlockPos pos = blockHitResult.getBlockPos();
-            if (DMLConfig.allowEggOverride() && world.getBlockState(pos).isOf(Blocks.DRAGON_EGG)) {
+            if (DMConfig.getCommonConfig().allowEggOverride && world.getBlockState(pos).isOf(Blocks.DRAGON_EGG)) {
                 Optional<DragonBreed> end = BreedRegistry.registry(world.getRegistryManager()).getOrEmpty(DragonBreed.BuiltIn.END);
                 if (end.isPresent()) {
                     if (world instanceof ServerWorld serverWorld) {
@@ -50,5 +51,6 @@ public class DragonMounts implements ModInitializer {
             }
             return ActionResult.PASS;
         });
+        LootProcessor.init();
     }
 }

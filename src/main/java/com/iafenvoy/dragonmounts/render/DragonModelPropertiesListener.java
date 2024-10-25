@@ -1,4 +1,4 @@
-package com.iafenvoy.dragonmounts.data.model;
+package com.iafenvoy.dragonmounts.render;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;

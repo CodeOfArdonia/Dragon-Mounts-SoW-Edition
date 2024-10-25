@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.dragon.egg;
 
-import com.iafenvoy.dragonmounts.DMLConfig;
+import com.iafenvoy.dragonmounts.config.DMConfig;
 import com.iafenvoy.dragonmounts.Static;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
 import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
@@ -32,6 +32,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -234,7 +235,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
 
         if (finalStage) // too far gone to change habitats now!
             this.crack(world, pos); // being closer to hatching creates more struggles to escape
-        else if (DMLConfig.updateHabitats() && !data.getTransition().isRunning())
+        else if (DMConfig.getCommonConfig().updateHabitats && !data.getTransition().isRunning())
             data.updateHabitat();
     }
 
@@ -393,6 +394,13 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
             NbtCompound tag = new NbtCompound();
             tag.putString(TameableDragon.NBT_BREED, breed.id(reg).toString());
             ItemStack stack = new ItemStack(DMBlocks.EGG_BLOCK);
+            BlockItem.setBlockEntityNbt(stack, DMBlocks.EGG_BLOCK_ENTITY, tag);
+            return stack;
+        }
+
+        public static ItemStack apply(ItemStack stack, RegistryKey<DragonBreed> key) {
+            NbtCompound tag = new NbtCompound();
+            tag.putString(TameableDragon.NBT_BREED, key.getValue().toString());
             BlockItem.setBlockEntityNbt(stack, DMBlocks.EGG_BLOCK_ENTITY, tag);
             return stack;
         }

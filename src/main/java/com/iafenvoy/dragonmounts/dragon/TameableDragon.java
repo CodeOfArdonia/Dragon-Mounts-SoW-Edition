@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.dragon;
 
-import com.iafenvoy.dragonmounts.DMLConfig;
+import com.iafenvoy.dragonmounts.config.DMConfig;
 import com.iafenvoy.dragonmounts.DragonMounts;
 import com.iafenvoy.dragonmounts.abilities.Ability;
 import com.iafenvoy.dragonmounts.client.DragonAnimator;
@@ -357,8 +357,9 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
             moveForward = moveForward > 0 ? moveForward : 0;
             if (driver.jumping) moveY = 1;
             else if (DMKeyBindings.FLIGHT_DESCENT_KEY.isPressed()) moveY = -1;
-            else if (moveForward > 0 && DMLConfig.cameraDrivenFlight())
-                moveY = -driver.getPitch() / 90; // normalize from -1 to 1
+            else {
+                if (moveForward > 0 && DMConfig.getClientConfig().cameraDrivenFlight) moveY = -driver.getPitch() / 90; // normalize from -1 to 1
+            }
         }
         // mimic dogshit implementation of AI movement vectors
         // the way this works is that it will mimic how setSpeed in Mob works:

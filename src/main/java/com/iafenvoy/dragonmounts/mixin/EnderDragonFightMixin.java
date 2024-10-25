@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.mixin;
 
-import com.iafenvoy.dragonmounts.DMLConfig;
+import com.iafenvoy.dragonmounts.config.DMConfig;
 import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,6 +18,7 @@ public class EnderDragonFightMixin {
      */
     @Redirect(method = "dragonKilled", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/boss/dragon/EnderDragonFight;previouslyKilled:Z", opcode = Opcodes.GETFIELD))
     private boolean dragonmounts_replenishDragonEgg(EnderDragonFight instance) {
-        return instance.hasPreviouslyKilled() && !DMLConfig.replenishEggs(); // return the inverse of what we want because the target check inverts the result... yeah.
+        // return the inverse of what we want because the target check inverts the result... yeah.
+        return instance.hasPreviouslyKilled() && !DMConfig.getCommonConfig().replenishEggs;
     }
 }

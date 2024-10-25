@@ -2,7 +2,7 @@ package com.iafenvoy.dragonmounts.dragon.breed;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.iafenvoy.dragonmounts.DMLConfig;
+import com.iafenvoy.dragonmounts.config.DMConfig;
 import com.iafenvoy.dragonmounts.DragonMounts;
 import com.iafenvoy.dragonmounts.abilities.Ability;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
@@ -87,7 +87,7 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
     }
 
     public int getReproductionLimit() {
-        return this.reproLimit().map(Function.identity(), DMLConfig::getReproLimitFor);
+        return this.reproLimit().map(Function.identity(), configTarget -> DMConfig.getCommonConfig().getReproduceLimit(configTarget));
     }
 
     public Identifier id(DynamicRegistryManager reg) {
