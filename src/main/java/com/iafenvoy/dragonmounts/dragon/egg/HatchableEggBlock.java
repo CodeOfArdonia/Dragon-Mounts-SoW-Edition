@@ -7,7 +7,6 @@ import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.registry.DMBlocks;
 import com.iafenvoy.dragonmounts.registry.DMEntities;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -79,14 +78,6 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(HATCH_STAGE, HATCHING, WATERLOGGED);
-    }
-
-    public static void populateTab(FabricItemGroupEntries registrar) {
-        if (MinecraftClient.getInstance().world != null) {
-            DynamicRegistryManager reg = MinecraftClient.getInstance().world.getRegistryManager();
-            for (DragonBreed breed : BreedRegistry.registry(reg))
-                registrar.add(Item.create(breed, reg));
-        }
     }
 
     @Override

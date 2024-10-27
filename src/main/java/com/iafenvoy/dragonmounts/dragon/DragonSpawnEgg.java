@@ -5,8 +5,6 @@ import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.registry.DMEntities;
 import com.iafenvoy.dragonmounts.registry.DMItems;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -54,14 +52,6 @@ public class DragonSpawnEgg extends SpawnEggItem {
         ItemStack stack = new ItemStack(DMItems.SPAWN_EGG);
         stack.setNbt(root);
         return stack;
-    }
-
-    public static void populateTab(FabricItemGroupEntries registrar) {
-        if (MinecraftClient.getInstance().world != null) {
-            DynamicRegistryManager reg = MinecraftClient.getInstance().world.getRegistryManager();
-            for (DragonBreed breed : BreedRegistry.registry(reg))
-                registrar.add(create(breed, reg));
-        }
     }
 
     @Override

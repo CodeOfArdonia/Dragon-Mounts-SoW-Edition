@@ -164,7 +164,6 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
                     throw new JsonParseException(e);
                 }
             }
-
             return new DragonEggModel(models.build());
         }
     }
