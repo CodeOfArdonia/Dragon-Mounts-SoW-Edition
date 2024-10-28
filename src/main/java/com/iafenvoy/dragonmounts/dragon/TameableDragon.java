@@ -92,7 +92,6 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     public static final int BASE_KB_RESISTANCE = 1;
     public static final float BASE_WIDTH = 2.75f; // adult sizes
     public static final float BASE_HEIGHT = 2.75f;
-    public static final int BASE_REPRO_LIMIT = 2;
     public static final int BASE_GROWTH_TIME = 72000;
     public static final float BASE_SIZE_MODIFIER = 1.0f;
     // data value IDs
@@ -556,12 +555,6 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     public float getSoundPitch() {
         return 2 - this.getScaleFactor();
     }
-
-//    @Override
-//    public ItemStack getPickedResult(HitResult target) {
-//        if (this.getBreed() == null) return ItemStack.EMPTY;
-//        return DragonSpawnEgg.create(this.getBreed(), this.getWorld().getRegistryManager());
-//    }
 
     @Override
     protected Text getDefaultName() {

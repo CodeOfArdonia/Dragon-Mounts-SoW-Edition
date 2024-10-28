@@ -2,9 +2,9 @@ package com.iafenvoy.dragonmounts.dragon.breed;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.iafenvoy.dragonmounts.config.DMConfig;
 import com.iafenvoy.dragonmounts.DragonMounts;
 import com.iafenvoy.dragonmounts.abilities.Ability;
+import com.iafenvoy.dragonmounts.config.DMConfig;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
 import com.iafenvoy.dragonmounts.dragon.egg.HatchableEggBlock;
 import com.iafenvoy.dragonmounts.habitats.Habitat;
@@ -29,6 +29,7 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -94,8 +95,8 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
         return BreedRegistry.registry(reg).getId(this);
     }
 
-    public static String getTranslationKey(String resourceLocation) {
-        return "dragon_breed." + resourceLocation.replace(':', '.');
+    public static String getTranslationKey(String id) {
+        return "dragon_breed." + id.replace(':', '.');
     }
 
     private void applyAttributes(TameableDragon dragon) {
@@ -121,6 +122,7 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
     }
 
     public static final class BuiltIn {
+        public static final List<RegistryKey<DragonBreed>> BUILTIN = new ArrayList<>();
         public static final RegistryKey<DragonBreed> AETHER = key("aether");
         public static final RegistryKey<DragonBreed> END = key("end");
         public static final RegistryKey<DragonBreed> FIRE = key("fire");
@@ -131,10 +133,9 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
         public static final RegistryKey<DragonBreed> WATER = key("water");
 
         private static RegistryKey<DragonBreed> key(String id) {
-            return RegistryKey.of(BreedRegistry.REGISTRY_KEY, Identifier.of(DragonMounts.MOD_ID, id));
-        }
-
-        private BuiltIn() {
+            RegistryKey<DragonBreed> key = RegistryKey.of(BreedRegistry.REGISTRY_KEY, Identifier.of(DragonMounts.MOD_ID, id));
+            BUILTIN.add(key);
+            return key;
         }
     }
 }
