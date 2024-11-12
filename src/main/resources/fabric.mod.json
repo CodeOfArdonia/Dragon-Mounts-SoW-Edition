@@ -3,14 +3,14 @@
   "id": "dragon_mounts",
   "version": "${version}",
   "name": "Dragon Mounts: SoW Edition",
-  "description": "This is a mod that allows you to hatch previously useless dragon eggs.\nOnce fostered and tamed, they'll be your faithful companion in all situations and, of course, can be used for a ride!",
+  "description": "This is a mod that allows you to hatch previously useless dragon eggs. Once fostered and tamed, they'll be your faithful companion in all situations and, of course, can be used for a ride!",
   "authors": [
     "Kay9",
     "IAFEnvoy",
     "XunMengLong"
   ],
   "contact": {
-    "sources": "https://github.com/ArkTechMC/Dragon-Mounts-SoW-Edition"
+    "sources": "https://github.com/CodeOfArdonia/Dragon-Mounts-SoW-Edition"
   },
   "license": "GPL-3.0",
   "icon": "logo.jpg",

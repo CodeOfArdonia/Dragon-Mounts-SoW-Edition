@@ -357,7 +357,9 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
             if (driver.jumping) moveY = 1;
             else if (DMKeyBindings.FLIGHT_DESCENT_KEY.isPressed()) moveY = -1;
             else {
-                if (moveForward > 0 && DMConfig.getClientConfig().cameraDrivenFlight) moveY = -driver.getPitch() / 90; // normalize from -1 to 1
+                if (moveForward > 0) {
+                    if (DMConfig.CLIENT.cameraDrivenFlight) moveY = -driver.getPitch() / 90; // normalize from -1 to 1
+                }
             }
         }
         // mimic dogshit implementation of AI movement vectors

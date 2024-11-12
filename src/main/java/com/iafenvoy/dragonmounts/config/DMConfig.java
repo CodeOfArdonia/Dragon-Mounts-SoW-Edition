@@ -9,16 +9,8 @@ import java.util.Map;
 import static com.iafenvoy.dragonmounts.dragon.breed.DragonBreed.BuiltIn.*;
 
 public class DMConfig {
-    private static final Common COMMON = ConfigLoader.load(Common.class, "./config/dragon_mounts/common.json", new Common());
-    private static final Client CLIENT = ConfigLoader.load(Client.class, "./config/dragon_mounts/client.json", new Client());
-
-    public static Common getCommonConfig() {
-        return COMMON;
-    }
-
-    public static Client getClientConfig() {
-        return CLIENT;
-    }
+    public static final Common COMMON = ConfigLoader.load(Common.class, "./config/dragon_mounts/common.json", new Common());
+    public static final Client CLIENT = ConfigLoader.load(Client.class, "./config/dragon_mounts/client.json", new Client());
 
     public static class Common {
         public boolean allowEggOverride = true;

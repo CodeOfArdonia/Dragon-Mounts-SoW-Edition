@@ -19,6 +19,6 @@ public class EnderDragonFightMixin {
     @Redirect(method = "dragonKilled", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/boss/dragon/EnderDragonFight;previouslyKilled:Z", opcode = Opcodes.GETFIELD))
     private boolean dragonmounts_replenishDragonEgg(EnderDragonFight instance) {
         // return the inverse of what we want because the target check inverts the result... yeah.
-        return instance.hasPreviouslyKilled() && !DMConfig.getCommonConfig().replenishEggs;
+        return instance.hasPreviouslyKilled() && !DMConfig.COMMON.replenishEggs;
     }
 }

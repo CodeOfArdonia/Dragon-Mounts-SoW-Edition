@@ -25,8 +25,8 @@ public class DMKeyBindings {
         KeyBindingRegistryImpl.registerKeyBinding(CAMERA_CONTROLS);
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (CAMERA_CONTROLS.wasPressed() && client.player != null && client.player.getVehicle() instanceof TameableDragon d) {
-                DMConfig.getClientConfig().cameraDrivenFlight ^= true;
-                client.player.sendMessage(Text.translatable("mount.dragon.camera_controls." + (DMConfig.getClientConfig().cameraDrivenFlight ? "enabled" : "disabled"), d.getDisplayName()), true);
+                DMConfig.CLIENT.cameraDrivenFlight ^= true;
+                client.player.sendMessage(Text.translatable("mount.dragon.camera_controls." + (DMConfig.CLIENT.cameraDrivenFlight ? "enabled" : "disabled"), d.getDisplayName()), true);
             }
         });
     }

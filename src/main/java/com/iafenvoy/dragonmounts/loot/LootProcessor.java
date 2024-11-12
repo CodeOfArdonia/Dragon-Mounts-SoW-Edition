@@ -50,7 +50,7 @@ public class LootProcessor {
 
     private record Target(RegistryKey<DragonBreed> forBreed, Identifier target) {
         public float getChance() {
-            return DMConfig.getCommonConfig().eggGenerateChance.getOrDefault(forBreed.getValue().toString(), 1F);
+            return DMConfig.COMMON.eggGenerateChance.getOrDefault(forBreed.getValue().toString(), 1F);
         }
     }
 }

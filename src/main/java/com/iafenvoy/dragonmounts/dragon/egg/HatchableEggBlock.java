@@ -226,7 +226,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
 
         if (finalStage) // too far gone to change habitats now!
             this.crack(world, pos); // being closer to hatching creates more struggles to escape
-        else if (DMConfig.getCommonConfig().updateHabitats && !data.getTransition().isRunning())
+        else if (DMConfig.COMMON.updateHabitats && !data.getTransition().isRunning())
             data.updateHabitat();
     }
 

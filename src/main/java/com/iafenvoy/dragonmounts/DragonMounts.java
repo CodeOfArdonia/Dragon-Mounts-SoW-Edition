@@ -39,7 +39,7 @@ public class DragonMounts implements ModInitializer {
         DynamicRegistries.registerSynced(BreedRegistry.REGISTRY_KEY, DragonBreed.CODEC, DragonBreed.NETWORK_CODEC);
         UseBlockCallback.EVENT.register((player, world, hand, blockHitResult) -> {
             BlockPos pos = blockHitResult.getBlockPos();
-            if (DMConfig.getCommonConfig().allowEggOverride && world.getBlockState(pos).isOf(Blocks.DRAGON_EGG)) {
+            if (DMConfig.COMMON.allowEggOverride && world.getBlockState(pos).isOf(Blocks.DRAGON_EGG)) {
                 Optional<DragonBreed> end = BreedRegistry.registry(world.getRegistryManager()).getOrEmpty(DragonBreed.BuiltIn.END);
                 if (end.isPresent()) {
                     if (world instanceof ServerWorld serverWorld) {

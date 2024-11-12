@@ -88,7 +88,7 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
     }
 
     public int getReproductionLimit() {
-        return this.reproLimit().map(Function.identity(), configTarget -> DMConfig.getCommonConfig().getReproduceLimit(configTarget));
+        return this.reproLimit().map(Function.identity(), configTarget -> DMConfig.COMMON.getReproduceLimit(configTarget));
     }
 
     public Identifier id(DynamicRegistryManager reg) {
