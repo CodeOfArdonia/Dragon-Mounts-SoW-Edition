@@ -5,6 +5,7 @@ import com.iafenvoy.dragonmounts.DragonMounts;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.jupiter.config.container.AutoInitConfigContainer;
 import com.iafenvoy.jupiter.config.entry.BooleanEntry;
+import com.iafenvoy.jupiter.config.entry.IntegerEntry;
 import com.iafenvoy.jupiter.config.entry.MapDoubleEntry;
 import com.iafenvoy.jupiter.config.entry.MapIntegerEntry;
 import com.iafenvoy.jupiter.interfaces.IConfigEntry;
@@ -30,6 +31,7 @@ public class DMCommonConfig extends AutoInitConfigContainer {
         public final IConfigEntry<Boolean> replenishEggs = new BooleanEntry("config.%s.common.replenishEggs".formatted(MOD_ID), true).json("replenishEggs");
         public final IConfigEntry<Boolean> updateHabitats = new BooleanEntry("config.%s.common.updateHabitats".formatted(MOD_ID), true).json("updateHabitats");
         public final IConfigEntry<Boolean> randomTickHatch = new BooleanEntry("config.%s.common.randomTickHatch".formatted(MOD_ID), true).json("randomTickHatch");
+        public final IConfigEntry<Integer> maxMountPerDragon = new IntegerEntry("config.%s.common.maxMountPerDragon".formatted(MOD_ID), 2, 0, 10).json("maxMountPerDragon");
         //egg chance
         public final IConfigEntry<Map<String, Double>> eggGenerateChance = new MapDoubleEntry("config.%s.common.eggGenerateChance".formatted(MOD_ID), Map.of(
                 AETHER.getValue().toString(), 0.15,

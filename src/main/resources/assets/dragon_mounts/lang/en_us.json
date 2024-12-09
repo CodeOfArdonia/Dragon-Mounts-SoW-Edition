@@ -27,6 +27,7 @@
   "config.dragon_mounts.common.allowEggOverride": "Allow Egg Override",
   "config.dragon_mounts.common.eggGenerateChance": "Egg Generate Chance",
   "config.dragon_mounts.common.hatchTime": "Hatch Time",
+  "config.dragon_mounts.common.maxMountPerDragon": "Max Riders Per Dragon",
   "config.dragon_mounts.common.name": "Common",
   "config.dragon_mounts.common.randomTickHatch": "Random Tick Hatch (Disable Hatch Time)",
   "config.dragon_mounts.common.replenishEggs": "Replenish Eggs",
