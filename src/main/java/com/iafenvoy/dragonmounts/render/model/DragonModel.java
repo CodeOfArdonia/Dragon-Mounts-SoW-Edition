@@ -1,8 +1,9 @@
 package com.iafenvoy.dragonmounts.render.model;
 
-import com.iafenvoy.dragonmounts.render.DragonAnimator;
-import com.iafenvoy.dragonmounts.render.util.ModelPartAccess;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.render.animator.ClientDragonAnimator;
+import com.iafenvoy.dragonmounts.render.animator.DragonAnimator;
+import com.iafenvoy.dragonmounts.render.util.ModelPartAccess;
 import com.iafenvoy.dragonmounts.render.util.ModelPartProxy;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -316,7 +317,7 @@ public class DragonModel extends EntityModel<TameableDragon> {
         DragonAnimator animator = dragon.getAnimator();
         animator.setLook(pNetHeadYaw, pHeadPitch);
         animator.setMovement(pLimbSwing, pLimbSwingAmount * dragon.getScaleFactor());
-        dragon.getAnimator().animate(this);
+        ((ClientDragonAnimator) dragon.getAnimator()).animate(this);
     }
 
     @Override

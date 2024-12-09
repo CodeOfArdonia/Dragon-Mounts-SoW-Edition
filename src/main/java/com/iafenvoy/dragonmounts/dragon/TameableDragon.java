@@ -1,11 +1,8 @@
 package com.iafenvoy.dragonmounts.dragon;
 
-import com.iafenvoy.dragonmounts.config.DMConfig;
 import com.iafenvoy.dragonmounts.DragonMounts;
 import com.iafenvoy.dragonmounts.abilities.Ability;
-import com.iafenvoy.dragonmounts.render.DragonAnimator;
-import com.iafenvoy.dragonmounts.render.util.MountCameraManager;
-import com.iafenvoy.dragonmounts.render.util.MountControlsMessenger;
+import com.iafenvoy.dragonmounts.config.DMConfig;
 import com.iafenvoy.dragonmounts.data.CrossBreedingManager;
 import com.iafenvoy.dragonmounts.dragon.ai.DragonBodyController;
 import com.iafenvoy.dragonmounts.dragon.ai.DragonBreedGoal;
@@ -19,6 +16,11 @@ import com.iafenvoy.dragonmounts.registry.DMBlocks;
 import com.iafenvoy.dragonmounts.registry.DMEntities;
 import com.iafenvoy.dragonmounts.registry.DMKeyBindings;
 import com.iafenvoy.dragonmounts.registry.DMSounds;
+import com.iafenvoy.dragonmounts.render.animator.ClientDragonAnimator;
+import com.iafenvoy.dragonmounts.render.animator.DragonAnimator;
+import com.iafenvoy.dragonmounts.render.util.MountCameraManager;
+import com.iafenvoy.dragonmounts.render.util.MountControlsMessenger;
+import com.iafenvoy.dragonmounts.util.DMMath;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
@@ -121,7 +123,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         super(type, level);
         this.ignoreCameraFrustum = true;
         this.moveControl = new DragonMoveController(this);
-        this.animator = level.isClient ? new DragonAnimator(this) : null;
+        this.animator = level.isClient ? new ClientDragonAnimator(this) : new DragonAnimator(this);
         this.flyingNavigation = new BirdNavigation(this, level);
         this.groundNavigation = new MobNavigation(this, level);
         this.flyingNavigation.setCanSwim(true);
@@ -442,7 +444,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         }
 
         // ride on
-        if (this.isTamedFor(player) && this.isSaddled() && !this.isHatchling() && !this.isBreedingItem(stack)) {
+        if (this.isSaddled() && !this.isHatchling() && !this.isBreedingItem(stack)) {
             if (this.isServer()) {
                 player.startRiding(this);
                 this.navigation.stop();
@@ -780,6 +782,11 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     }
 
     @Override
+    protected boolean canAddPassenger(Entity passenger) {
+        return this.getPassengerList().size() < 2;
+    }
+
+    @Override
     protected void addPassenger(Entity passenger) {
         super.addPassenger(passenger);
         if (passenger instanceof PlayerEntity) {
@@ -800,10 +807,13 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
 
     @Override
     protected void updatePassengerPosition(Entity ridden, PositionUpdater pCallback) {
-        if (this.hasPassenger(ridden)) {
-            Vec3d rePos = new Vec3d(0, this.getMountedHeightOffset() + ridden.getHeightOffset(), this.getScaleFactor())
-                    .rotateY((float) Math.toRadians(-this.bodyYaw))
-                    .add(this.getPos());
+        int index = this.getPassengerList().indexOf(ridden);
+        if (index != -1) {
+            Vec3d unitY = new Vec3d(0, this.getMountedHeightOffset() + ridden.getHeightOffset(), 0).rotateY((float) Math.toRadians(-this.bodyYaw));
+            Vec3d unitZ = new Vec3d(0, 0, this.getScaleFactor()).rotateY((float) Math.toRadians(-this.bodyYaw));
+            Vec3d rePos = this.getPos().add(unitY).add(unitZ);
+            unitZ = DMMath.getRotationVectorUnit(-this.animator.getModelPitch(), this.bodyYaw).multiply(unitZ.length());
+            for (int i = 0; i < index; i++) rePos = rePos.subtract(unitZ);
             pCallback.accept(ridden, rePos.x, rePos.y, rePos.z);
             // fix rider rotation
             if (this.getFirstPassenger() instanceof LivingEntity) {

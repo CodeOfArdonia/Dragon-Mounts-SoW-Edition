@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.iafenvoy.dragonmounts.DragonMounts;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
+import com.iafenvoy.dragonmounts.render.animator.DragonAnimator;
 import com.iafenvoy.dragonmounts.render.model.DragonModel;
 import com.iafenvoy.dragonmounts.render.model.DragonModelPropertiesListener;
 import net.minecraft.client.MinecraftClient;
