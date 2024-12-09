@@ -1,10 +1,9 @@
-package com.iafenvoy.dragonmounts.render;
+package com.iafenvoy.dragonmounts.render.model;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.iafenvoy.dragonmounts.DragonMounts;
-import com.iafenvoy.dragonmounts.client.DragonModel;
-import com.iafenvoy.dragonmounts.client.DragonRenderer;
+import com.iafenvoy.dragonmounts.render.DragonRenderer;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.impl.client.rendering.EntityModelLayerImpl;

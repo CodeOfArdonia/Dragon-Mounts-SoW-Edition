@@ -1,4 +1,4 @@
-package com.iafenvoy.dragonmounts.accessors;
+package com.iafenvoy.dragonmounts.render.util;
 
 public interface ModelPartAccess {
     float getXScale();

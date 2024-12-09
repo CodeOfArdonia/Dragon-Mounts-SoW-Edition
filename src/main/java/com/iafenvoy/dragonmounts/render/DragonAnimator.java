@@ -1,6 +1,7 @@
-package com.iafenvoy.dragonmounts.client;
+package com.iafenvoy.dragonmounts.render;
 
-import com.iafenvoy.dragonmounts.accessors.ModelPartAccess;
+import com.iafenvoy.dragonmounts.render.model.DragonModel;
+import com.iafenvoy.dragonmounts.render.util.ModelPartAccess;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
 import com.iafenvoy.dragonmounts.util.CircularBuffer;
 import com.iafenvoy.dragonmounts.util.LerpedFloat;

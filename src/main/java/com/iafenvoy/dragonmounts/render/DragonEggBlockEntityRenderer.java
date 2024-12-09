@@ -1,8 +1,8 @@
 package com.iafenvoy.dragonmounts.render;
 
-import com.iafenvoy.dragonmounts.client.DragonEggModel;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.dragon.egg.HatchableEggBlockEntity;
+import com.iafenvoy.dragonmounts.render.model.DragonEggModel;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;

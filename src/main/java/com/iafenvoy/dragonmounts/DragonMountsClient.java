@@ -1,7 +1,7 @@
 package com.iafenvoy.dragonmounts;
 
-import com.iafenvoy.dragonmounts.client.DragonEggModel;
-import com.iafenvoy.dragonmounts.client.MountControlsMessenger;
+import com.iafenvoy.dragonmounts.render.model.DragonEggModel;
+import com.iafenvoy.dragonmounts.render.util.MountControlsMessenger;
 import com.iafenvoy.dragonmounts.dragon.DragonSpawnEgg;
 import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
@@ -10,7 +10,7 @@ import com.iafenvoy.dragonmounts.dragon.egg.HatchableEggBlockEntity;
 import com.iafenvoy.dragonmounts.registry.DMItems;
 import com.iafenvoy.dragonmounts.registry.DMKeyBindings;
 import com.iafenvoy.dragonmounts.registry.DMRenderers;
-import com.iafenvoy.dragonmounts.render.DragonModelPropertiesListener;
+import com.iafenvoy.dragonmounts.render.model.DragonModelPropertiesListener;
 import io.github.fabricators_of_create.porting_lib.models.geometry.RegisterGeometryLoadersCallback;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;

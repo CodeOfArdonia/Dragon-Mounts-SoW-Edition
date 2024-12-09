@@ -1,6 +1,6 @@
-package com.iafenvoy.dragonmounts.mixin.client;
+package com.iafenvoy.dragonmounts.mixin;
 
-import com.iafenvoy.dragonmounts.client.MountCameraManager;
+import com.iafenvoy.dragonmounts.render.util.MountCameraManager;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;

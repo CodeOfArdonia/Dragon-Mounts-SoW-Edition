@@ -1,7 +1,7 @@
 package com.iafenvoy.dragonmounts.registry;
 
-import com.iafenvoy.dragonmounts.client.DragonModel;
-import com.iafenvoy.dragonmounts.client.DragonRenderer;
+import com.iafenvoy.dragonmounts.render.model.DragonModel;
+import com.iafenvoy.dragonmounts.render.DragonRenderer;
 import com.iafenvoy.dragonmounts.render.DragonEggBlockEntityRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

@@ -1,10 +1,11 @@
-package com.iafenvoy.dragonmounts.client;
+package com.iafenvoy.dragonmounts.render;
 
 import com.google.common.collect.ImmutableMap;
 import com.iafenvoy.dragonmounts.DragonMounts;
-import com.iafenvoy.dragonmounts.render.DragonModelPropertiesListener;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
+import com.iafenvoy.dragonmounts.render.model.DragonModel;
+import com.iafenvoy.dragonmounts.render.model.DragonModelPropertiesListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRendererFactory;

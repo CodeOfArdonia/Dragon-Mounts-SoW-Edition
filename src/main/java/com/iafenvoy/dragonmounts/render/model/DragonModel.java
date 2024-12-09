@@ -1,7 +1,9 @@
-package com.iafenvoy.dragonmounts.client;
+package com.iafenvoy.dragonmounts.render.model;
 
-import com.iafenvoy.dragonmounts.accessors.ModelPartAccess;
+import com.iafenvoy.dragonmounts.render.DragonAnimator;
+import com.iafenvoy.dragonmounts.render.util.ModelPartAccess;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.render.util.ModelPartProxy;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.model.*;

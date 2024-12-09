@@ -1,4 +1,4 @@
-package com.iafenvoy.dragonmounts.client;
+package com.iafenvoy.dragonmounts.render.util;
 
 import com.iafenvoy.dragonmounts.config.DMConfig;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;

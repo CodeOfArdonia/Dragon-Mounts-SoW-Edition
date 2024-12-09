@@ -1,4 +1,4 @@
-package com.iafenvoy.dragonmounts.client;
+package com.iafenvoy.dragonmounts.render.model;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMap;

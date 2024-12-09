@@ -1,6 +1,6 @@
-package com.iafenvoy.dragonmounts.mixin.client;
+package com.iafenvoy.dragonmounts.mixin;
 
-import com.iafenvoy.dragonmounts.accessors.ModelPartAccess;
+import com.iafenvoy.dragonmounts.render.util.ModelPartAccess;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;

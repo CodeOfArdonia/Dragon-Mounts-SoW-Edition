@@ -7,11 +7,11 @@
     "MinecraftServerMixin",
     "EnderDragonFightMixin"
   ],
+  "client": [
+    "GameRendererMixin",
+    "ModelPartMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "client": [
-    "client.GameRendererMixin",
-    "client.ModelPartMixin"
-  ]
+  }
 }
