@@ -1,7 +1,7 @@
 package com.iafenvoy.dragonmounts.dragon.egg;
 
-import com.iafenvoy.dragonmounts.config.DMConfig;
 import com.iafenvoy.dragonmounts.Static;
+import com.iafenvoy.dragonmounts.config.DMCommonConfig;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
 import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
@@ -147,18 +147,6 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
             teleport(state, world, at); // retain original dragon egg teleport behavior
     }
 
-    //TODO
-//    @Override
-//    public boolean onDestroyedByPlayer(BlockState state, World level, BlockPos at, PlayerEntity player, boolean willHarvest, FluidState fluid) {
-//        if (!player.getAbilities().creativeMode
-//                && level.getBlockEntity(at) instanceof HatchableEggBlockEntity e
-//                && e.hasBreed()
-//                && e.getBreed().id(level.getRegistryManager()).getPath().equals("end")
-//                && !state.get(HATCHING))
-//            return false; // retain original dragon egg teleport behavior; DON'T destroy!
-//        return super.onDestroyedByPlayer(state, level, at, player, willHarvest, fluid);
-//    }
-
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView level, List<Text> tooltips, TooltipContext context) {
         super.appendTooltip(stack, level, tooltips, context);
@@ -205,7 +193,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
 
     @Override
     public boolean hasRandomTicks(BlockState pState) {
-        return pState.get(HATCHING);
+        return DMCommonConfig.INSTANCE.COMMON.randomTickHatch.getValue() && pState.get(HATCHING);
     }
 
     @Override // will only tick when HATCHING, according to isRandomlyTicking
@@ -226,7 +214,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
 
         if (finalStage) // too far gone to change habitats now!
             this.crack(world, pos); // being closer to hatching creates more struggles to escape
-        else if (DMConfig.COMMON.updateHabitats && !data.getTransition().isRunning())
+        else if (DMCommonConfig.INSTANCE.COMMON.updateHabitats.getValue())
             data.updateHabitat();
     }
 

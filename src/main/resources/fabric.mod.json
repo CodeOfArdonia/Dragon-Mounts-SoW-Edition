@@ -21,6 +21,9 @@
     ],
     "client": [
       "com.iafenvoy.dragonmounts.DragonMountsClient"
+    ],
+    "modmenu": [
+      "com.iafenvoy.dragonmounts.ModMenu"
     ]
   },
   "accessWidener": "dragon_mounts.accesswidener",
@@ -30,6 +33,7 @@
   "depends": {
     "fabricloader": "*",
     "minecraft": "~1.20.1",
-    "fabric-api": "*"
+    "fabric-api": "*",
+    "jupiter": ">=2"
   }
 }

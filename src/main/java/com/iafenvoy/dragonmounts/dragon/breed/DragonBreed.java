@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.iafenvoy.dragonmounts.DragonMounts;
 import com.iafenvoy.dragonmounts.abilities.Ability;
-import com.iafenvoy.dragonmounts.config.DMConfig;
+import com.iafenvoy.dragonmounts.config.DMCommonConfig;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
 import com.iafenvoy.dragonmounts.dragon.egg.HatchableEggBlock;
 import com.iafenvoy.dragonmounts.habitats.Habitat;
@@ -88,7 +88,7 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
     }
 
     public int getReproductionLimit() {
-        return this.reproLimit().map(Function.identity(), configTarget -> DMConfig.COMMON.getReproduceLimit(configTarget));
+        return this.reproLimit().map(Function.identity(), DMCommonConfig.INSTANCE.COMMON::getReproduceLimit);
     }
 
     public Identifier id(DynamicRegistryManager reg) {

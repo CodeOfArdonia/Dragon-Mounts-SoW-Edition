@@ -1,15 +1,17 @@
 package com.iafenvoy.dragonmounts;
 
-import com.iafenvoy.dragonmounts.config.DMConfig;
+import com.iafenvoy.dragonmounts.config.DMCommonConfig;
 import com.iafenvoy.dragonmounts.data.CrossBreedingManager;
-import com.iafenvoy.dragonmounts.loot.LootProcessor;
 import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.dragon.egg.HatchableEggBlock;
+import com.iafenvoy.dragonmounts.loot.LootProcessor;
 import com.iafenvoy.dragonmounts.registry.DMBlocks;
 import com.iafenvoy.dragonmounts.registry.DMEntities;
 import com.iafenvoy.dragonmounts.registry.DMItems;
 import com.iafenvoy.dragonmounts.registry.DMSounds;
+import com.iafenvoy.jupiter.ConfigManager;
+import com.iafenvoy.jupiter.ServerConfigManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
@@ -31,6 +33,9 @@ public class DragonMounts implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        ConfigManager.getInstance().registerConfigHandler(DMCommonConfig.INSTANCE);
+        ConfigManager.getInstance().registerServerConfig(DMCommonConfig.INSTANCE, ServerConfigManager.PermissionChecker.IS_OPERATOR);
+
         DMBlocks.init();
         DMEntities.init();
         DMItems.init();
@@ -39,7 +44,7 @@ public class DragonMounts implements ModInitializer {
         DynamicRegistries.registerSynced(BreedRegistry.REGISTRY_KEY, DragonBreed.CODEC, DragonBreed.NETWORK_CODEC);
         UseBlockCallback.EVENT.register((player, world, hand, blockHitResult) -> {
             BlockPos pos = blockHitResult.getBlockPos();
-            if (DMConfig.COMMON.allowEggOverride && world.getBlockState(pos).isOf(Blocks.DRAGON_EGG)) {
+            if (DMCommonConfig.INSTANCE.COMMON.allowEggOverride.getValue() && world.getBlockState(pos).isOf(Blocks.DRAGON_EGG)) {
                 Optional<DragonBreed> end = BreedRegistry.registry(world.getRegistryManager()).getOrEmpty(DragonBreed.BuiltIn.END);
                 if (end.isPresent()) {
                     if (world instanceof ServerWorld serverWorld) {

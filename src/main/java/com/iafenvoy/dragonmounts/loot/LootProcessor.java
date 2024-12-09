@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.loot;
 
-import com.iafenvoy.dragonmounts.config.DMConfig;
+import com.iafenvoy.dragonmounts.config.DMCommonConfig;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.dragon.egg.HatchableEggBlock;
 import com.iafenvoy.dragonmounts.registry.DMBlocks;
@@ -50,7 +50,7 @@ public class LootProcessor {
 
     private record Target(RegistryKey<DragonBreed> forBreed, Identifier target) {
         public float getChance() {
-            return DMConfig.COMMON.eggGenerateChance.getOrDefault(forBreed.getValue().toString(), 1F);
+            return DMCommonConfig.INSTANCE.COMMON.eggGenerateChance.getValue().getOrDefault(forBreed.getValue().toString(), 1.0).floatValue();
         }
     }
 }

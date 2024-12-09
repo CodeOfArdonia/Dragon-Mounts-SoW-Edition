@@ -2,7 +2,7 @@ package com.iafenvoy.dragonmounts.dragon;
 
 import com.iafenvoy.dragonmounts.DragonMounts;
 import com.iafenvoy.dragonmounts.abilities.Ability;
-import com.iafenvoy.dragonmounts.config.DMConfig;
+import com.iafenvoy.dragonmounts.config.DMClientConfig;
 import com.iafenvoy.dragonmounts.data.CrossBreedingManager;
 import com.iafenvoy.dragonmounts.dragon.ai.DragonBodyController;
 import com.iafenvoy.dragonmounts.dragon.ai.DragonBreedGoal;
@@ -360,7 +360,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
             else if (DMKeyBindings.FLIGHT_DESCENT_KEY.isPressed()) moveY = -1;
             else {
                 if (moveForward > 0) {
-                    if (DMConfig.CLIENT.cameraDrivenFlight) moveY = -driver.getPitch() / 90; // normalize from -1 to 1
+                    if (DMClientConfig.INSTANCE.MISC.cameraDrivenFlight.getValue()) moveY = -driver.getPitch() / 90; // normalize from -1 to 1
                 }
             }
         }

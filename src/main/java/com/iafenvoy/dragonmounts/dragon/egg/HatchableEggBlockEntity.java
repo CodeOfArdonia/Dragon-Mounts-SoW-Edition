@@ -2,6 +2,7 @@ package com.iafenvoy.dragonmounts.dragon.egg;
 
 import com.google.common.base.Suppliers;
 import com.iafenvoy.dragonmounts.Static;
+import com.iafenvoy.dragonmounts.config.DMCommonConfig;
 import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.habitats.Habitat;
@@ -19,6 +20,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -27,10 +29,9 @@ import java.util.function.Supplier;
 
 public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
     public static final int MIN_HABITAT_POINTS = 2;
-    public static final int BREED_TRANSITION_TIME = 200;
-    private final TransitionHandler transitioner = new TransitionHandler();
     private Supplier<DragonBreed> breed = () -> null;
     private Text customName;
+    private int hatchTick;
 
     public HatchableEggBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(DMBlocks.EGG_BLOCK_ENTITY, pPos, pBlockState);
@@ -44,11 +45,7 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
             tag.putString(HatchableEggBlock.NBT_BREED, this.getBreed().id(this.getWorld().getRegistryManager()).toString());
         if (this.getCustomName() != null)
             tag.putString(HatchableEggBlock.NBT_NAME, Text.Serializer.toJson(this.customName));
-        if (this.getTransition().isRunning()) {
-            NbtCompound transitionTag = new NbtCompound();
-            this.getTransition().save(transitionTag);
-            tag.put(TransitionHandler.NBT_TRANSITIONER, transitionTag);
-        }
+        tag.putInt(HatchableEggBlock.NBT_HATCH_STAGE, this.hatchTick);
     }
 
     /*
@@ -61,10 +58,9 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
         this.setBreed(Suppliers.memoize(() -> BreedRegistry.get(pTag.getString(HatchableEggBlock.NBT_BREED), this.getWorld().getRegistryManager())));
         String name = pTag.getString(HatchableEggBlock.NBT_NAME);
         if (!name.isBlank()) this.setCustomName(Text.Serializer.fromJson(name));
-        NbtCompound transitioner = pTag.getCompound(TransitionHandler.NBT_TRANSITIONER);
-        if (!transitioner.isEmpty()) this.getTransition().load(transitioner);
-        if (this.getWorld() != null && this.getWorld().isClient()) // client needs to be aware of new changes
+        if (this.getWorld() != null && this.getWorld().isClient) // client needs to be aware of new changes
             this.getWorld().updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);
+        this.hatchTick = pTag.getInt(HatchableEggBlock.NBT_HATCH_STAGE);
     }
 
     @Override
@@ -115,10 +111,6 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
         this.customName = name;
     }
 
-    public TransitionHandler getTransition() {
-        return this.transitioner;
-    }
-
     @SuppressWarnings({"ConstantConditions", "unused"}) // guarded
     public void tick(World world, BlockPos pos, BlockState state) {
         if (!world.isClient && !this.hasBreed()) {// at this point we may not receive a breed; resolve a random one.
@@ -126,7 +118,20 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
             this.setBreed(() -> newBreed);
             this.getWorld().updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);
         }
-        this.getTransition().tick(this.getWorld().getRandom());
+        this.hatchTick++;
+        if (this.breed.get() == null) return;
+        if (world instanceof ServerWorld serverWorld && !DMCommonConfig.INSTANCE.COMMON.randomTickHatch.getValue() && this.hatchTick >= DMCommonConfig.INSTANCE.COMMON.getHatchTime(this.breed.get().id(this.getWorld().getRegistryManager()).toString()) / 4)
+            DMBlocks.EGG_BLOCK.randomTick(state, serverWorld, pos, world.random);
+        if (state.get(HatchableEggBlock.HATCHING))
+            for (int i = 0; i < 5; i++) {
+                BlockPos p = this.getPos();
+                Random random = new LocalRandom(System.currentTimeMillis());
+                double px = pos.getX() + random.nextDouble();
+                double py = pos.getY() + random.nextDouble();
+                double pz = pos.getZ() + random.nextDouble();
+                DustParticleEffect particle = HatchableEggBlock.dustParticleFor(this.breed.get(), random);
+                HatchableEggBlockEntity.this.getWorld().addParticle(particle, px, py, pz, 0, 0, 0);
+            }
     }
 
     @SuppressWarnings("ConstantConditions") // level exists at this point
@@ -141,64 +146,7 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
                 prevPoints = points;
             }
         }
-        if (winner != null && winner != this.getBreed()) {
-            this.getTransition().begin(winner);
+        if (winner != null && winner != this.getBreed())
             this.getWorld().updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);
-        }
-    }
-
-    @SuppressWarnings("ConstantConditions") // level exists at this point
-    public class TransitionHandler {
-        private static final String NBT_TRANSITIONER = "TransitionerTag";
-        private static final String NBT_TRANSITION_BREED = "TransitionBreed";
-        private static final String NBT_TRANSITION_TIME = "TransitionTime";
-
-        public Supplier<DragonBreed> transitioningBreed = () -> null;
-        public int transitionTime;
-
-        public void tick(Random random) {
-            if (this.isRunning()) {
-                if (this.transitioningBreed.get() == null) {// invalid breed id, etc.
-                    this.transitionTime = 0;
-                    return;
-                }
-                if (--this.transitionTime == 0) {
-                    HatchableEggBlockEntity.this.setBreed(this.transitioningBreed);
-                    HatchableEggBlockEntity.this.getWorld().updateListeners(HatchableEggBlockEntity.this.getPos(), HatchableEggBlockEntity.this.getCachedState(), HatchableEggBlockEntity.this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);
-                }
-                if (HatchableEggBlockEntity.this.getWorld().isClient) {
-                    for (int i = 0; i < (BREED_TRANSITION_TIME - this.transitionTime) * 0.25; i++) {
-                        BlockPos pos = HatchableEggBlockEntity.this.getPos();
-                        double px = pos.getX() + random.nextDouble();
-                        double py = pos.getY() + random.nextDouble();
-                        double pz = pos.getZ() + random.nextDouble();
-                        DustParticleEffect particle = HatchableEggBlock.dustParticleFor(this.transitioningBreed.get(), random);
-                        HatchableEggBlockEntity.this.getWorld().addParticle(particle, px, py, pz, 0, 0, 0);
-                    }
-                }
-            }
-        }
-
-        public void startFrom(Supplier<DragonBreed> transitioningBreed, int transitionTime) {
-            this.transitioningBreed = transitioningBreed;
-            this.transitionTime = transitionTime;
-        }
-
-        public void begin(DragonBreed transitioningBreed) {
-            this.startFrom(() -> transitioningBreed, BREED_TRANSITION_TIME);
-        }
-
-        public boolean isRunning() {
-            return this.transitionTime > 0;
-        }
-
-        public void save(NbtCompound tag) {
-            tag.putString(NBT_TRANSITION_BREED, this.transitioningBreed.get().id(HatchableEggBlockEntity.this.getWorld().getRegistryManager()).toString());
-            tag.putInt(NBT_TRANSITION_TIME, this.transitionTime);
-        }
-
-        public void load(NbtCompound tag) {
-            this.startFrom(Suppliers.memoize(() -> BreedRegistry.get(tag.getString(NBT_TRANSITION_BREED), HatchableEggBlockEntity.this.getWorld().getRegistryManager())), tag.getInt(NBT_TRANSITION_TIME));
-        }
     }
 }
