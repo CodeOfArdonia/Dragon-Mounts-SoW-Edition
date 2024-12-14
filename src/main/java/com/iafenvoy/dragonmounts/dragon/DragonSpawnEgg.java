@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.dragon;
 
-import com.iafenvoy.dragonmounts.Static;
+import com.iafenvoy.dragonmounts.DMConstants;
 import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.registry.DMEntities;
@@ -88,11 +88,11 @@ public class DragonSpawnEgg extends SpawnEggItem {
 
     @SuppressWarnings("ConstantConditions")
     private static void preconditionSpawnEgg(ItemStack stack) {
-        if (Static.server == null) return;
+        if (DMConstants.server == null) return;
         NbtCompound root = stack.getOrCreateNbt();
         NbtCompound blockEntityData = stack.getOrCreateSubNbt(EntityType.ENTITY_TAG_KEY);
         String breedId = blockEntityData.getString(TameableDragon.NBT_BREED);
-        DynamicRegistryManager.Immutable regAcc = Static.server.getRegistryManager();
+        DynamicRegistryManager.Immutable regAcc = DMConstants.server.getRegistryManager();
         Registry<DragonBreed> reg = BreedRegistry.registry(regAcc);
         if (breedId.isEmpty() || !reg.containsId(new Identifier(breedId))) {// this item doesn't contain a breed yet?
             // assign one ourselves then.

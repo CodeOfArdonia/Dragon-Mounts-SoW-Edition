@@ -1,7 +1,7 @@
 package com.iafenvoy.dragonmounts.dragon.egg;
 
 import com.google.common.base.Suppliers;
-import com.iafenvoy.dragonmounts.Static;
+import com.iafenvoy.dragonmounts.DMConstants;
 import com.iafenvoy.dragonmounts.config.DMCommonConfig;
 import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
@@ -88,7 +88,7 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
         if (this.world instanceof ServerWorld serverWorld && this.breed.get() != null) {
             PacketByteBuf buf = PacketByteBufs.create().writeBlockPos(this.pos).writeString(this.breed.get().id(serverWorld.getRegistryManager()).toString());
             for (ServerPlayerEntity player : serverWorld.getServer().getPlayerManager().getPlayerList())
-                ServerPlayNetworking.send(player, Static.DRAGON_EGG_TYPE_SYNC, buf);
+                ServerPlayNetworking.send(player, DMConstants.DRAGON_EGG_TYPE_SYNC, buf);
         }
     }
 
@@ -129,7 +129,8 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
                 double px = pos.getX() + random.nextDouble();
                 double py = pos.getY() + random.nextDouble();
                 double pz = pos.getZ() + random.nextDouble();
-                DustParticleEffect particle = HatchableEggBlock.dustParticleFor(this.breed.get(), random);
+                DragonBreed breed1 = this.breed.get();
+                DustParticleEffect particle = breed1.dustParticleFor(random);
                 HatchableEggBlockEntity.this.getWorld().addParticle(particle, px, py, pz, 0, 0, 0);
             }
     }

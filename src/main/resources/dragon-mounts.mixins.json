@@ -3,11 +3,12 @@
   "package": "com.iafenvoy.dragonmounts.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ServerPlayNetworkHandlerMixin",
+    "EnderDragonFightMixin",
     "MinecraftServerMixin",
-    "EnderDragonFightMixin"
+    "ServerPlayNetworkHandlerMixin"
   ],
   "client": [
+    "AbstractDustParticleMixin",
     "GameRendererMixin",
     "ModelPartMixin"
   ],

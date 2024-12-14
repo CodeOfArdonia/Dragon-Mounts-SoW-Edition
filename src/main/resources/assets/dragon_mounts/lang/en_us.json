@@ -53,6 +53,7 @@
   "item.dragon_mounts.spawn_egg.dragon_mounts.nether": "Nether Dragon Spawn Egg",
   "item.dragon_mounts.spawn_egg.dragon_mounts.water": "Water Dragon Spawn Egg",
   "key.dragon_mounts.camera_flight": "Dragon Mount Flight Commands",
+  "key.dragon_mounts.dragon_attack": "Dragon Mount Dragon Attack",
   "key.dragon_mounts.flight_descent": "Dragon Mount Flight Descent",
   "mount.dragon.camera_controls.disabled": "%s will now only Ascend on your Command",
   "mount.dragon.camera_controls.enabled": "%s will now Ascend Toward Your Direction",

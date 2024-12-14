@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.impl.client.rendering.BlockEntityRendererRegistryImpl;
 
 @Environment(EnvType.CLIENT)
-public class DMRenderers {
+public final class DMRenderers {
     public static void registerRenderers() {
         EntityRendererRegistry.register(DMEntities.DRAGON, DragonRenderer::new);
         EntityModelLayerRegistry.registerModelLayer(DragonRenderer.MODEL_LOCATION, () -> DragonModel.createBodyLayer(DragonModel.Properties.STANDARD));

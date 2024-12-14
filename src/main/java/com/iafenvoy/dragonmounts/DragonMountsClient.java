@@ -38,7 +38,7 @@ public class DragonMountsClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(MountControlsMessenger::tick);
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(DragonModelPropertiesListener.INSTANCE);
         RegisterGeometryLoadersCallback.EVENT.register(map -> map.put(new Identifier(DragonMounts.MOD_ID, "dragon_egg"), DragonEggModel.Loader.INSTANCE));
-        ClientPlayNetworking.registerGlobalReceiver(Static.DRAGON_EGG_TYPE_SYNC, (client, handler, buf, sender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(DMConstants.DRAGON_EGG_TYPE_SYNC, (client, handler, buf, sender) -> {
             BlockPos pos = buf.readBlockPos();
             String type = buf.readString();
             client.execute(() -> {

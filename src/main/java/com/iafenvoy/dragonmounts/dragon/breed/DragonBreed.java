@@ -20,6 +20,7 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.item.Item;
 import net.minecraft.loot.LootTables;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.*;
@@ -28,6 +29,8 @@ import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,6 +122,14 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
             }
         });
         dragon.setHealth(dragon.getMaxHealth() * healthFrac);
+    }
+
+    public ParticleEffect getHatchingParticles(Random random) {
+        return this.hatchParticles().orElseGet(() -> this.dustParticleFor(random));
+    }
+
+    public DustParticleEffect dustParticleFor(Random random) {
+        return new DustParticleEffect(Vec3d.unpackRgb(random.nextDouble() < 0.75 ? this.primaryColor() : this.secondaryColor()).toVector3f(), 1);
     }
 
     public static final class BuiltIn {

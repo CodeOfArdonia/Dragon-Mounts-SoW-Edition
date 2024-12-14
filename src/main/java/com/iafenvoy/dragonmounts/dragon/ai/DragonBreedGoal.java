@@ -19,7 +19,7 @@ public class DragonBreedGoal extends AnimalMateGoal {
 
     @Override
     public boolean canStart() {
-        if (!this.dragon.isAdult()) return false;
+        if (this.dragon.isChild()) return false;
         if (!this.dragon.isInLove()) return false;
         else return (this.mate = this.getNearbyMate()) != null;
     }

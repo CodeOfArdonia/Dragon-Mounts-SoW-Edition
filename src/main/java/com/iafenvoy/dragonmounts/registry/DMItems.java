@@ -7,7 +7,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
-public class DMItems {
+public final class DMItems {
     public static final Item SPAWN_EGG = register("spawn_egg", new DragonSpawnEgg());
 
     private static <T extends Item> T register(String id, T item) {

@@ -1,21 +1,26 @@
 package com.iafenvoy.dragonmounts.render.animator;
 
+import com.iafenvoy.dragonmounts.DMConstants;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.render.model.DragonModel;
 import com.iafenvoy.dragonmounts.render.util.ModelPartAccess;
+import com.iafenvoy.dragonmounts.util.DMMath;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
+
+import java.util.function.Supplier;
 
 /**
  * Animation control class to put useless reptiles in motion.
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-@SuppressWarnings({"unused", "DataFlowIssue"})
+@SuppressWarnings("DataFlowIssue")
 public class ClientDragonAnimator extends DragonAnimator {
-    // constants
-    private static final int JAW_OPENING_TIME_FOR_ATTACK = 5;
-
     // timing vars
     private float animBase;
     private float cycleOfs;
@@ -26,7 +31,6 @@ public class ClientDragonAnimator extends DragonAnimator {
     private float jaw;
 
     // model flags
-    private boolean openJaw;
     private boolean wingsDown;
 
     // animation parameters
@@ -181,6 +185,21 @@ public class ClientDragonAnimator extends DragonAnimator {
 
         model.jaw.pitch = this.jaw * 0.75f;
         model.jaw.pitch += (1 - MathHelper.sin(this.animBase)) * 0.1f * this.flutter;
+
+        if (this.dragon.isAttacking()) {
+            Random random = this.dragon.getRandom();
+            final Supplier<Double> R = () -> random.nextDouble() / 2 - 0.25;
+            Vec3d headOffset = new Vec3d(model.head.pivotX, model.head.pivotY, model.head.pivotZ);
+            Vec3d headVec = DMMath.getRotationVectorUnit((float) Math.toDegrees(Math.atan(headOffset.y / headOffset.z)), this.dragon.getYaw()).multiply(headOffset.length());
+            Vec3d pos = this.dragon.getPos().add(headVec.multiply(this.dragon.getScaleFactor() / 8));
+            if (this.dragon.isOnGround()) pos = pos.add(0, 2.5, 0);
+            Vec3d unit = DMMath.getRotationVectorUnit(this.dragon.getPitch() + model.head.pitch, this.dragon.getYaw() + model.head.yaw);
+            DMConstants.shouldForceParticleSpeed = true;
+            DragonBreed breed = this.dragon.getBreed();
+            for (int i = 0; i < 5; i++)
+                MinecraftClient.getInstance().world.addParticle(breed.dustParticleFor(random), pos.x, pos.y, pos.z, unit.x + R.get(), unit.y + R.get(), unit.z + R.get());
+            DMConstants.shouldForceParticleSpeed = false;
+        }
     }
 
     protected void animWings(DragonModel model) {
@@ -401,10 +420,6 @@ public class ClientDragonAnimator extends DragonAnimator {
         }
     }
 
-    public void setOpenJaw(boolean openJaw) {
-        this.openJaw = openJaw;
-    }
-
     private static void mirrorRotate(ModelPart rightLimb, ModelPart leftLimb, float xRot, float yRot, float zRot) {
         rightLimb.pitch = xRot;
         rightLimb.yaw = yRot;
@@ -428,18 +443,13 @@ public class ClientDragonAnimator extends DragonAnimator {
             return;
         }
 
-        for (int i = 0; i < c.length; i++) {
+        for (int i = 0; i < c.length; i++)
             c[i] = terpSmoothStep(a[i], b[i], x);
-        }
     }
 
     private static float terpSmoothStep(float a, float b, float x) {
-        if (x <= 0) {
-            return a;
-        }
-        if (x >= 1) {
-            return b;
-        }
+        if (x <= 0) return a;
+        if (x >= 1) return b;
         x = x * x * (3 - 2 * x);
         return a * (1 - x) + b * x;
     }
@@ -471,15 +481,12 @@ public class ClientDragonAnimator extends DragonAnimator {
         int nknots = knots.length;
         int nspans = nknots - 3;
         int knot = 0;
-        if (nspans < 1) {
-            throw new IllegalArgumentException("Spline has too few knots");
-        }
+        if (nspans < 1) throw new IllegalArgumentException("Spline has too few knots");
+
         x = MathHelper.clamp(x, 0, 0.9999f) * nspans;
 
         int span = (int) x;
-        if (span >= nknots - 3) {
-            span = nknots - 3;
-        }
+        if (span >= nknots - 3) span = nknots - 3;
 
         x -= span;
         knot += span;

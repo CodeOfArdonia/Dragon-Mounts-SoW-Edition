@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.dragon.egg;
 
-import com.iafenvoy.dragonmounts.Static;
+import com.iafenvoy.dragonmounts.DMConstants;
 import com.iafenvoy.dragonmounts.config.DMCommonConfig;
 import com.iafenvoy.dragonmounts.dragon.TameableDragon;
 import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
@@ -26,7 +26,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -45,7 +44,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -252,7 +250,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
         double oy = 0;
         double oz = 0;
 
-        ParticleEffect particle = getHatchingParticles(breed, random);
+        ParticleEffect particle = breed.getHatchingParticles(random);
         if (particle.getType() == ParticleTypes.DUST) py = pos.getY() + (random.nextDouble() - 0.5) + 1;
         else if (particle.getType() == ParticleTypes.PORTAL) {
             ox = (random.nextDouble() - 0.5) * 2;
@@ -261,14 +259,6 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
         }
 
         level.addParticle(particle, px, py, pz, ox, oy, oz);
-    }
-
-    public static ParticleEffect getHatchingParticles(DragonBreed breed, Random random) {
-        return breed.hatchParticles().orElseGet(() -> dustParticleFor(breed, random));
-    }
-
-    public static DustParticleEffect dustParticleFor(DragonBreed breed, Random random) {
-        return new DustParticleEffect(Vec3d.unpackRgb(random.nextDouble() < 0.75 ? breed.primaryColor() : breed.secondaryColor()).toVector3f(), 1);
     }
 
     // taken from DragonEggBlock#teleport
@@ -358,11 +348,11 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
         }
 
         private static void ensureExistingBreedType(ItemStack stack) {
-            if (Static.server == null) return;
+            if (DMConstants.server == null) return;
             if (!stack.hasNbt()) stack.setNbt(new NbtCompound());
             NbtCompound blockEntityData = stack.getOrCreateSubNbt(BlockItem.BLOCK_ENTITY_TAG_KEY);
             String breed = blockEntityData.getString(NBT_BREED);
-            Registry<DragonBreed> reg = BreedRegistry.registry(Static.server.getRegistryManager());
+            Registry<DragonBreed> reg = BreedRegistry.registry(DMConstants.server.getRegistryManager());
             if (breed.isEmpty() || !reg.containsId(new Identifier(breed))) {// this item doesn't contain a breed yet?
                 breed = reg.getRandom(Random.create()).orElseThrow().registryKey().getValue().toString();
                 blockEntityData.putString(NBT_BREED, breed); // assign one ourselves then.

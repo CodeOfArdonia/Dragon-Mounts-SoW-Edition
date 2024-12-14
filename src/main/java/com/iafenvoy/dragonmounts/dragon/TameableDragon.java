@@ -101,6 +101,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     private static final TrackedData<String> DATA_BREED = DataTracker.registerData(TameableDragon.class, TrackedDataHandlerRegistry.STRING);
     private static final TrackedData<Boolean> DATA_SADDLED = DataTracker.registerData(TameableDragon.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> DATA_AGE = DataTracker.registerData(TameableDragon.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> DATA_ATTACKING = DataTracker.registerData(TameableDragon.class, TrackedDataHandlerRegistry.INTEGER);
     // data NBT IDs
     public static final String NBT_BREED = "Breed";
     private static final String NBT_SADDLED = "Saddle";
@@ -173,6 +174,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         this.dataTracker.startTracking(DATA_BREED, "");
         this.dataTracker.startTracking(DATA_SADDLED, false);
         this.dataTracker.startTracking(DATA_AGE, 0); // default to adult stage
+        this.dataTracker.startTracking(DATA_ATTACKING, 0); // default to adult stage
     }
 
     @Override
@@ -298,9 +300,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     }
 
     public void setNavigation(boolean flying) {
-        this.navigation = flying ?
-                this.flyingNavigation :
-                this.groundNavigation;
+        this.navigation = flying ? this.flyingNavigation : this.groundNavigation;
     }
 
     @Override
@@ -310,7 +310,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         super.tick();
         if (this.isServer()) {
             // periodically sync age data back to client
-            if (!this.isAdult() && this.age % AGE_UPDATE_INTERVAL == 0)
+            if (this.isChild() && this.age % AGE_UPDATE_INTERVAL == 0)
                 this.dataTracker.set(DATA_AGE, this.breedingAge);
             // heal randomly
             if (this.isAlive() && this.getRandom().nextFloat() < 0.001) this.heal(1f);
@@ -333,6 +333,12 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         }
         this.updateAgeProgress();
         for (Ability ability : this.getAbilities()) ability.tick(this);
+        // Player command attack logic
+        int attackTick = this.dataTracker.get(DATA_ATTACKING);
+        if (attackTick > 0) {
+            attackTick--;
+            this.dataTracker.set(DATA_ATTACKING, attackTick);
+        }
     }
 
     @Override
@@ -924,13 +930,21 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         return this.getAgeProgress() >= 0.5f && this.getAgeProgress() < 1f;
     }
 
-    public boolean isAdult() {
-        return this.getAgeProgress() >= 1f;
+    public boolean isChild() {
+        return !(this.getAgeProgress() >= 1f);
+    }
+
+    public boolean isAttacking() {
+        return this.dataTracker.get(DATA_ATTACKING) > 0;
+    }
+
+    public void setAttacking() {
+        this.dataTracker.set(DATA_ATTACKING, 5);
     }
 
     @Override
     public boolean isBaby() {
-        return !this.isAdult();
+        return this.isChild();
     }
 
     @Override

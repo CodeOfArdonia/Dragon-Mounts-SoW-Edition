@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.function.Function;
 
-public class DMBlocks {
+public final class DMBlocks {
     public static final HatchableEggBlock EGG_BLOCK = register("dragon_egg", new HatchableEggBlock(), HatchableEggBlock.Item::new);
     public static final BlockEntityType<HatchableEggBlockEntity> EGG_BLOCK_ENTITY = register("dragon_egg", BlockEntityType.Builder.create(HatchableEggBlockEntity::new, EGG_BLOCK).build(null));
 

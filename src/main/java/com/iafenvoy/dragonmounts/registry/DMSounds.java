@@ -6,7 +6,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
-public class DMSounds {
+public final class DMSounds {
     public static final SoundEvent DRAGON_AMBIENT_SOUND = register("entity.dragon.ambient");
     public static final SoundEvent DRAGON_STEP_SOUND = register("entity.dragon.step");
     public static final SoundEvent DRAGON_DEATH_SOUND = register("entity.dragon.death");
