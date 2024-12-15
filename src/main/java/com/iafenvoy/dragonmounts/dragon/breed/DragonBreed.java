@@ -125,11 +125,11 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
     }
 
     public ParticleEffect getHatchingParticles(Random random) {
-        return this.hatchParticles().orElseGet(() -> this.dustParticleFor(random));
+        return this.hatchParticles().orElseGet(() -> this.dustParticleFor(random, 1));
     }
 
-    public DustParticleEffect dustParticleFor(Random random) {
-        return new DustParticleEffect(Vec3d.unpackRgb(random.nextDouble() < 0.75 ? this.primaryColor() : this.secondaryColor()).toVector3f(), 1);
+    public DustParticleEffect dustParticleFor(Random random, float scale) {
+        return new DustParticleEffect(Vec3d.unpackRgb(random.nextDouble() < 0.75 ? this.primaryColor() : this.secondaryColor()).toVector3f(), scale);
     }
 
     public static final class BuiltIn {

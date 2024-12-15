@@ -22,6 +22,7 @@ import com.iafenvoy.dragonmounts.render.animator.DragonAnimator;
 import com.iafenvoy.dragonmounts.render.util.MountCameraManager;
 import com.iafenvoy.dragonmounts.render.util.MountControlsMessenger;
 import com.iafenvoy.dragonmounts.util.DMMath;
+import com.iafenvoy.dragonmounts.util.WorldUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
@@ -60,6 +61,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.function.BooleanBiFunction;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -338,6 +340,8 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         if (attackTick > 0) {
             attackTick--;
             this.dataTracker.set(DATA_ATTACKING, attackTick);
+            EntityHitResult result = WorldUtil.raycastNearest(this, 40, 3);
+            if (result != null) result.getEntity().damage(this.getWorld().getDamageSources().mobAttack(this), 1);
         }
     }
 

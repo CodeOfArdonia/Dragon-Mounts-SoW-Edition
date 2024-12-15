@@ -194,10 +194,10 @@ public class ClientDragonAnimator extends DragonAnimator {
             Vec3d pos = this.dragon.getPos().add(headVec.multiply(this.dragon.getScaleFactor() / 8));
             if (this.dragon.isOnGround()) pos = pos.add(0, 2.5, 0);
             Vec3d unit = DMMath.getRotationVectorUnit(this.dragon.getPitch() + model.head.pitch, this.dragon.getYaw() + model.head.yaw);
-            DMConstants.shouldForceParticleSpeed = true;
             DragonBreed breed = this.dragon.getBreed();
+            DMConstants.shouldForceParticleSpeed = true;
             for (int i = 0; i < 5; i++)
-                MinecraftClient.getInstance().world.addParticle(breed.dustParticleFor(random), pos.x, pos.y, pos.z, unit.x + R.get(), unit.y + R.get(), unit.z + R.get());
+                MinecraftClient.getInstance().world.addParticle(breed.dustParticleFor(random, this.dragon.getScaleFactor() * 3), pos.x, pos.y, pos.z, unit.x + R.get(), unit.y + R.get(), unit.z + R.get());
             DMConstants.shouldForceParticleSpeed = false;
         }
     }

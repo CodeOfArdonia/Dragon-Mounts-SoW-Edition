@@ -1,5 +1,8 @@
 # Dragon Mounts: SoW Edition
 
+**Special Version Notice: This mod is for my modpack, so do not ask for following stuffs: support other MC version,
+integrations with other mods except mods in modpack.**
+
 *"A Minecraft mod that allows you to breed dragon eggs and foster them to ridable dragons." --BarracudaATA*
 
 This mod is an unofficial fork of

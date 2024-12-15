@@ -130,7 +130,7 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
                 double py = pos.getY() + random.nextDouble();
                 double pz = pos.getZ() + random.nextDouble();
                 DragonBreed breed1 = this.breed.get();
-                DustParticleEffect particle = breed1.dustParticleFor(random);
+                DustParticleEffect particle = breed1.dustParticleFor(random, 1);
                 HatchableEggBlockEntity.this.getWorld().addParticle(particle, px, py, pz, 0, 0, 0);
             }
     }
