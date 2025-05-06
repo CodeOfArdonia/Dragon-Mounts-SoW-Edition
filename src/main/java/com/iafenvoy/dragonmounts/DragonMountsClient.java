@@ -9,11 +9,9 @@ import com.iafenvoy.dragonmounts.dragon.egg.HatchableEggBlockEntity;
 import com.iafenvoy.dragonmounts.registry.DMItems;
 import com.iafenvoy.dragonmounts.registry.DMKeyBindings;
 import com.iafenvoy.dragonmounts.registry.DMRenderers;
-import com.iafenvoy.dragonmounts.render.model.DragonEggModel;
 import com.iafenvoy.dragonmounts.render.model.DragonModelPropertiesListener;
 import com.iafenvoy.dragonmounts.render.util.MountControlsMessenger;
 import com.iafenvoy.jupiter.ConfigManager;
-import io.github.fabricators_of_create.porting_lib.models.geometry.RegisterGeometryLoadersCallback;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -37,7 +35,7 @@ public class DragonMountsClient implements ClientModInitializer {
         DMRenderers.registerRenderers();
         ClientTickEvents.END_CLIENT_TICK.register(MountControlsMessenger::tick);
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(DragonModelPropertiesListener.INSTANCE);
-        RegisterGeometryLoadersCallback.EVENT.register(map -> map.put(new Identifier(DragonMounts.MOD_ID, "dragon_egg"), DragonEggModel.Loader.INSTANCE));
+
         ClientPlayNetworking.registerGlobalReceiver(DMConstants.DRAGON_EGG_TYPE_SYNC, (client, handler, buf, sender) -> {
             BlockPos pos = buf.readBlockPos();
             String type = buf.readString();

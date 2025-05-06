@@ -360,18 +360,24 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
         }
 
         public static ItemStack create(DragonBreed breed, DynamicRegistryManager reg) {
-            NbtCompound tag = new NbtCompound();
-            tag.putString(TameableDragon.NBT_BREED, breed.id(reg).toString());
+            NbtCompound nbt = new NbtCompound();
+            nbt.putString(TameableDragon.NBT_BREED, breed.id(reg).toString());
             ItemStack stack = new ItemStack(DMBlocks.EGG_BLOCK);
-            BlockItem.setBlockEntityNbt(stack, DMBlocks.EGG_BLOCK_ENTITY, tag);
+            BlockItem.setBlockEntityNbt(stack, DMBlocks.EGG_BLOCK_ENTITY, nbt);
             return stack;
         }
 
         public static ItemStack apply(ItemStack stack, RegistryKey<DragonBreed> key) {
-            NbtCompound tag = new NbtCompound();
-            tag.putString(TameableDragon.NBT_BREED, key.getValue().toString());
-            BlockItem.setBlockEntityNbt(stack, DMBlocks.EGG_BLOCK_ENTITY, tag);
+            NbtCompound nbt = new NbtCompound();
+            nbt.putString(TameableDragon.NBT_BREED, key.getValue().toString());
+            BlockItem.setBlockEntityNbt(stack, DMBlocks.EGG_BLOCK_ENTITY, nbt);
             return stack;
+        }
+
+        public static RegistryKey<DragonBreed> get(ItemStack stack) {
+            NbtCompound nbt = BlockItem.getBlockEntityNbt(stack);
+            if (nbt == null) return null;
+            return RegistryKey.of(BreedRegistry.REGISTRY_KEY, Identifier.tryParse(nbt.getString(TameableDragon.NBT_BREED)));
         }
     }
 }
