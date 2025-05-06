@@ -7,6 +7,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FarmlandBlock;
 import net.minecraft.block.Oxidizable;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -23,7 +24,7 @@ public class HydroStepAbility extends FootprintAbility implements Ability.Factor
         BlockPos groundPos = pos.down();
         BlockState steppingOn = world.getBlockState(groundPos);
 
-        if(world instanceof ServerWorld serverWorld)
+        if (world instanceof ServerWorld serverWorld)
             serverWorld.spawnParticles(ParticleTypes.FALLING_WATER, pos.getX(), pos.getY(), pos.getZ(), 10, 0.25, 0, 0.25, 0);
 
         // moisten farmland
@@ -47,7 +48,7 @@ public class HydroStepAbility extends FootprintAbility implements Ability.Factor
             return;
         }
 
-        Identifier steppingOnName = steppingOn.getBlock().getRegistryEntry().registryKey().getValue();
+        Identifier steppingOnName = Registries.BLOCK.getId(steppingOn.getBlock());
         if (steppingOnName.getNamespace().equals("minecraft") && steppingOnName.getPath().contains("copper")) {// yeah fuck that copper complex this game's got going on
             Oxidizable.getIncreasedOxidationBlock(steppingOn.getBlock()).ifPresent(b -> world.setBlockState(groundPos, b.getStateWithProperties(steppingOn)));
             return;

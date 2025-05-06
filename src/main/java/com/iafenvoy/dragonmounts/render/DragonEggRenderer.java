@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(EnvType.CLIENT)
 public class DragonEggRenderer implements BlockEntityRenderer<HatchableEggBlockEntity>, BuiltinItemRendererRegistry.DynamicItemRenderer {
     private static final MinecraftClient CLIENT = MinecraftClient.getInstance();
-    private static final Identifier DRAGON_EGG = new Identifier(Identifier.DEFAULT_NAMESPACE, "block/dragon_egg");
+    private static final Identifier DRAGON_EGG = new Identifier(Identifier.DEFAULT_NAMESPACE, "textures/block/dragon_egg.png");
 
     @Override
     public void render(HatchableEggBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {

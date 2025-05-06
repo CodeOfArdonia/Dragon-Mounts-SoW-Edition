@@ -111,7 +111,7 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
         this.customName = name;
     }
 
-    @SuppressWarnings({"ConstantConditions", "unused"}) // guarded
+    @SuppressWarnings({"ConstantConditions"}) // guarded
     public void tick(World world, BlockPos pos, BlockState state) {
         if (!world.isClient && !this.hasBreed()) {// at this point we may not receive a breed; resolve a random one.
             DragonBreed newBreed = BreedRegistry.getRandom(this.getWorld().getRegistryManager(), this.getWorld().getRandom());
@@ -147,7 +147,10 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
                 prevPoints = points;
             }
         }
-        if (winner != null && winner != this.getBreed())
+        if (winner != null && winner != this.getBreed()) {
+            DragonBreed finalWinner = winner;
+            this.setBreed(() -> finalWinner);
             this.getWorld().updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);
+        }
     }
 }

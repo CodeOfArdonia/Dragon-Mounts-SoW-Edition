@@ -66,7 +66,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
     public static final String NBT_NAME = "CustomName";
 
     public HatchableEggBlock() {
-        super(Settings.create().mapColor(MapColor.BLACK).strength(0f, 9f).luminance(s -> 1).nonOpaque());
+        super(Settings.create().mapColor(MapColor.BLACK).strength(0f, 9f).luminance(s -> 1).nonOpaque().ticksRandomly());
         this.setDefaultState(this.getDefaultState()
                 .with(HATCH_STAGE, 0)
                 .with(HATCHING, false)
@@ -189,30 +189,26 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
         }
     }
 
-    @Override
-    public boolean hasRandomTicks(BlockState pState) {
-        return DMCommonConfig.INSTANCE.COMMON.randomTickHatch.getValue() && pState.get(HATCHING);
-    }
-
     @Override // will only tick when HATCHING, according to isRandomlyTicking
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (!(world.getBlockEntity(pos) instanceof HatchableEggBlockEntity data) || data.getBreed() == null) return;
-        int hatchStage = state.get(HATCH_STAGE);
-        boolean finalStage = hatchStage == 3;
+        if (DMCommonConfig.INSTANCE.COMMON.randomTickHatch.getValue() && state.get(HATCHING)) {
+            int hatchStage = state.get(HATCH_STAGE);
+            boolean finalStage = hatchStage == 3;
 
-        if (random.nextFloat() < data.getBreed().hatchChance()) {
-            if (finalStage)
-                this.hatch(world, pos);
-            else {
-                this.crack(world, pos);
-                world.setBlockState(pos, state.with(HATCH_STAGE, hatchStage + 1), Block.NOTIFY_ALL);
+            if (random.nextFloat() < data.getBreed().hatchChance()) {
+                if (finalStage)
+                    this.hatch(world, pos);
+                else {
+                    this.crack(world, pos);
+                    world.setBlockState(pos, state.with(HATCH_STAGE, hatchStage + 1), Block.NOTIFY_ALL);
+                }
+                return;
             }
-            return;
+            if (finalStage) // too far gone to change habitats now!
+                this.crack(world, pos); // being closer to hatching creates more struggles to escape
         }
-
-        if (finalStage) // too far gone to change habitats now!
-            this.crack(world, pos); // being closer to hatching creates more struggles to escape
-        else if (DMCommonConfig.INSTANCE.COMMON.updateHabitats.getValue())
+        if (DMCommonConfig.INSTANCE.COMMON.updateHabitats.getValue())
             data.updateHabitat();
     }
 
