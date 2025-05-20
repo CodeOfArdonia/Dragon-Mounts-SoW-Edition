@@ -29,6 +29,7 @@
   "config.dragon_mounts.common.hatchTime": "Hatch Time",
   "config.dragon_mounts.common.maxMountPerDragon": "Max Riders Per Dragon",
   "config.dragon_mounts.common.name": "Common",
+  "config.dragon_mounts.common.ownerControl": "Owner Control Dragon Only",
   "config.dragon_mounts.common.randomTickHatch": "Random Tick Hatch (Disable Hatch Time)",
   "config.dragon_mounts.common.replenishEggs": "Replenish Eggs",
   "config.dragon_mounts.common.reproduceLimit": "Reproduce Limit (-1=No Limit)",

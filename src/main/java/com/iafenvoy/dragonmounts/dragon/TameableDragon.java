@@ -61,7 +61,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.function.BooleanBiFunction;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -340,8 +339,9 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         if (attackTick > 0) {
             attackTick--;
             this.dataTracker.set(DATA_ATTACKING, attackTick);
-            EntityHitResult result = WorldUtil.raycastNearest(this, 40, 3);
-            if (result != null) result.getEntity().damage(this.getWorld().getDamageSources().mobAttack(this), 1);
+            List<Entity> result = WorldUtil.raycastAll(this, 40, 2, entity -> this.getPassengerList().contains(entity) || entity instanceof TameableDragon dragon && dragon.breed == this.breed);
+            DamageSource damageSource = this.getWorld().getDamageSources().mobAttack(this);
+            result.forEach(x -> x.damage(damageSource, 1));
         }
     }
 
@@ -723,7 +723,6 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     }
 
     @Override
-    @SuppressWarnings("ConstantConditions") // breed nullability is checked in canReproduce
     public void breed(ServerWorld level, AnimalEntity animal) {
         if (!(animal instanceof TameableDragon mate)) {
             DragonMounts.LOGGER.warn("Tried to mate with non-dragon? Hello? {}", animal);
@@ -761,16 +760,14 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
             }
             if (egg != null) egg.setCustomName(Text.literal(babyName));
         }
-        // increase reproduction counter
         this.addReproCount();
         mate.addReproCount();
     }
 
     @Override
-    @SuppressWarnings("ConstantConditions")
     public PassiveEntity createChild(ServerWorld level, PassiveEntity mob) {
         TameableDragon offspring = DMEntities.DRAGON.create(level);
-        if (this.getBreed() != null) offspring.setBreed(this.getBreed());
+        if (this.getBreed() != null && offspring != null) offspring.setBreed(this.getBreed());
         return offspring;
     }
 
@@ -784,13 +781,9 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         return !this.isHatchling() && !this.hasControllingPassenger() && super.canTarget(target);
     }
 
-    /**
-     * For vehicles, the first passenger is generally considered the controller and "drives" the vehicle. For example,
-     * Pigs, Horses, and Boats are generally "steered" by the controlling passenger.
-     */
     @Override
     public LivingEntity getControllingPassenger() {
-        return this.getFirstPassenger() instanceof LivingEntity driver && this.isOwner(driver) ? driver : null;
+        return this.getFirstPassenger() instanceof LivingEntity driver && (!DMCommonConfig.INSTANCE.COMMON.ownerControl.getValue() || this.isOwner(driver)) ? driver : null;
     }
 
     @Override
@@ -815,6 +808,13 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     protected void removePassenger(Entity passenger) {
         if (this.hasLocalDriver()) MountCameraManager.onDragonDismount();
         super.removePassenger(passenger);
+        if (!this.hasPassengers()) {
+            BlockPos pos = this.getBlockPos();
+            World world = this.getWorld();
+            while (!world.getBlockState(pos).isAir() && world.isOutOfHeightLimit(pos)) pos = pos.down();
+            if (!world.isOutOfHeightLimit(pos))
+                this.navigation.startMovingTo(pos.getX(), pos.getY(), pos.getZ(), this.getMovementSpeed());
+        }
     }
 
     @Override

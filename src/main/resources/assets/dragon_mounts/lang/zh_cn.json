@@ -29,6 +29,7 @@
   "config.dragon_mounts.common.hatchTime": "孵化时间",
   "config.dragon_mounts.common.maxMountPerDragon": "每条龙最多骑乘玩家数",
   "config.dragon_mounts.common.name": "常规",
+  "config.dragon_mounts.common.ownerControl": "只有主人能控制龙",
   "config.dragon_mounts.common.randomTickHatch": "启用随机刻孵化（禁用孵化时间）",
   "config.dragon_mounts.common.replenishEggs": "龙蛋重生",
   "config.dragon_mounts.common.reproduceLimit": "繁殖限制（-1=无限制）",
