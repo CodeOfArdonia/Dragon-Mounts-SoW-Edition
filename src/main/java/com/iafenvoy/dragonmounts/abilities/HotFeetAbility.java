@@ -1,7 +1,7 @@
 package com.iafenvoy.dragonmounts.abilities;
 
 import com.iafenvoy.dragonmounts.DragonMounts;
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,7 +21,7 @@ public class HotFeetAbility extends FootprintAbility implements Ability.Factory<
     public static final TagKey<Block> BURNABLES_TAG = TagKey.of(RegistryKeys.BLOCK, Identifier.of(DragonMounts.MOD_ID, "hot_feet_burnables"));
 
     @Override
-    protected void placeFootprint(TameableDragon dragon, BlockPos pos) {
+    protected void placeFootprint(TameableDragonEntity dragon, BlockPos pos) {
         World world = dragon.getWorld();
         BlockState steppingOn = world.getBlockState(pos);
         if (steppingOn.isIn(BURNABLES_TAG)&&world instanceof ServerWorld serverWorld) {

@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.abilities;
 
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -23,7 +23,7 @@ public class GreenToesAbility extends FootprintAbility implements Ability.Factor
 
     // grow mushrooms and plants
     @Override
-    protected void placeFootprint(TameableDragon dragon, BlockPos pos) {
+    protected void placeFootprint(TameableDragonEntity dragon, BlockPos pos) {
         World world = dragon.getWorld();
         BlockPos groundPos = pos.down();
         BlockState steppingOn = world.getBlockState(groundPos);

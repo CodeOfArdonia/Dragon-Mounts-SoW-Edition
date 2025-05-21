@@ -2,7 +2,7 @@ package com.iafenvoy.dragonmounts.dragon.egg;
 
 import com.iafenvoy.dragonmounts.DMConstants;
 import com.iafenvoy.dragonmounts.config.DMCommonConfig;
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.registry.DMBlocks;
@@ -62,7 +62,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
     public static final BooleanProperty HATCHING = BooleanProperty.of("hatching");
     public static final float DEFAULT_HATCH_CHANCE = 0.1f;
     public static final String NBT_HATCH_STAGE = "hatch_stage";
-    public static final String NBT_BREED = TameableDragon.NBT_BREED;
+    public static final String NBT_BREED = TameableDragonEntity.NBT_BREED;
     public static final String NBT_NAME = "CustomName";
 
     public HatchableEggBlock() {
@@ -214,7 +214,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
 
     @Override
     public void randomDisplayTick(BlockState pState, World world, BlockPos pPos, Random random) {
-        if (pState.get(HATCHING) && world.getBlockEntity(pPos) instanceof HatchableEggBlockEntity e && e.hasBreed())
+        if (pState.get(HATCHING) && world.getBlockEntity(pPos) instanceof HatchableEggBlockEntity e && e.getBreed() != null)
             for (int i = 0; i < random.nextBetween(4, 7); i++)
                 this.addHatchingParticles(e.getBreed(), world, pPos, random);
     }
@@ -226,7 +226,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
     @SuppressWarnings("ConstantConditions") // creation of dragon is never null
     private void hatch(ServerWorld world, BlockPos pos) {
         HatchableEggBlockEntity data = (HatchableEggBlockEntity) world.getBlockEntity(pos);
-        TameableDragon baby = DMEntities.DRAGON.create(world);
+        TameableDragonEntity baby = DMEntities.DRAGON.create(world);
 
         world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 1.2f, 0.95f + world.getRandom().nextFloat() * 0.2f);
         world.removeBlock(pos, false); // remove block AFTER data is cached
@@ -318,10 +318,10 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
 
         @Override
         public ActionResult useOnEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
-            if (player.getAbilities().creativeMode && target instanceof TameableDragon dragon) {
+            if (player.getAbilities().creativeMode && target instanceof TameableDragonEntity dragon) {
                 NbtCompound tag = BlockItem.getBlockEntityNbt(stack);
                 if (tag != null) {
-                    dragon.setBreed(BreedRegistry.get(tag.getString(TameableDragon.NBT_BREED), player.getWorld().getRegistryManager()));
+                    dragon.setBreed(BreedRegistry.get(tag.getString(TameableDragonEntity.NBT_BREED), player.getWorld().getRegistryManager()));
                     return ActionResult.success(player.getWorld().isClient);
                 }
             }
@@ -357,7 +357,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
 
         public static ItemStack create(DragonBreed breed, DynamicRegistryManager reg) {
             NbtCompound nbt = new NbtCompound();
-            nbt.putString(TameableDragon.NBT_BREED, breed.id(reg).toString());
+            nbt.putString(TameableDragonEntity.NBT_BREED, breed.id(reg).toString());
             ItemStack stack = new ItemStack(DMBlocks.EGG_BLOCK);
             BlockItem.setBlockEntityNbt(stack, DMBlocks.EGG_BLOCK_ENTITY, nbt);
             return stack;
@@ -365,7 +365,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
 
         public static ItemStack apply(ItemStack stack, RegistryKey<DragonBreed> key) {
             NbtCompound nbt = new NbtCompound();
-            nbt.putString(TameableDragon.NBT_BREED, key.getValue().toString());
+            nbt.putString(TameableDragonEntity.NBT_BREED, key.getValue().toString());
             BlockItem.setBlockEntityNbt(stack, DMBlocks.EGG_BLOCK_ENTITY, nbt);
             return stack;
         }
@@ -373,7 +373,7 @@ public class HatchableEggBlock extends DragonEggBlock implements BlockEntityProv
         public static RegistryKey<DragonBreed> get(ItemStack stack) {
             NbtCompound nbt = BlockItem.getBlockEntityNbt(stack);
             if (nbt == null) return null;
-            return RegistryKey.of(BreedRegistry.REGISTRY_KEY, Identifier.tryParse(nbt.getString(TameableDragon.NBT_BREED)));
+            return RegistryKey.of(BreedRegistry.REGISTRY_KEY, Identifier.tryParse(nbt.getString(TameableDragonEntity.NBT_BREED)));
         }
     }
 }

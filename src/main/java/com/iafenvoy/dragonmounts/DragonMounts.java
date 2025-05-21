@@ -2,7 +2,7 @@ package com.iafenvoy.dragonmounts;
 
 import com.iafenvoy.dragonmounts.config.DMCommonConfig;
 import com.iafenvoy.dragonmounts.data.CrossBreedingManager;
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.dragon.egg.HatchableEggBlock;
@@ -38,7 +38,9 @@ public class DragonMounts implements ModInitializer {
         DMBlocks.init();
         DMEntities.init();
         DMItems.init();
+        DMParticles.init();
         DMSounds.init();
+
         LootProcessor.init();
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(CrossBreedingManager.INSTANCE);
         DynamicRegistries.registerSynced(BreedRegistry.REGISTRY_KEY, DragonBreed.CODEC, DragonBreed.NETWORK_CODEC);
@@ -57,7 +59,7 @@ public class DragonMounts implements ModInitializer {
             return ActionResult.PASS;
         });
         ServerPlayNetworking.registerGlobalReceiver(DMConstants.DRAGON_ATTACK, (server, player, handler, buf, sender) -> {
-            if (player.getVehicle() instanceof TameableDragon dragon && dragon.getOwner() == player)
+            if (player.getVehicle() instanceof TameableDragonEntity dragon && (dragon.getOwner() == player || !DMCommonConfig.INSTANCE.COMMON.ownerControl.getValue()))
                 server.execute(dragon::setAttacking);
         });
     }

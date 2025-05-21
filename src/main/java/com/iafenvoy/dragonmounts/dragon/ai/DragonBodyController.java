@@ -1,13 +1,13 @@
 package com.iafenvoy.dragonmounts.dragon.ai;
 
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import net.minecraft.entity.ai.control.BodyControl;
 import net.minecraft.util.math.MathHelper;
 
 public class DragonBodyController extends BodyControl {
-    private final TameableDragon dragon;
+    private final TameableDragonEntity dragon;
 
-    public DragonBodyController(TameableDragon dragon) {
+    public DragonBodyController(TameableDragonEntity dragon) {
         super(dragon);
         this.dragon = dragon;
     }

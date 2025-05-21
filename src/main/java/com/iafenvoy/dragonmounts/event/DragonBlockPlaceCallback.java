@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.event;
 
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.util.math.BlockPos;
@@ -16,5 +16,5 @@ public interface DragonBlockPlaceCallback {
         return true;
     });
 
-    boolean canPlace(TameableDragon dragon, World world, BlockPos pos, Direction direction);
+    boolean canPlace(TameableDragonEntity dragon, World world, BlockPos pos, Direction direction);
 }

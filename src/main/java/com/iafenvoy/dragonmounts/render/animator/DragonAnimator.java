@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.render.animator;
 
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.iafenvoy.dragonmounts.util.CircularBuffer;
 import com.iafenvoy.dragonmounts.util.LerpedFloat;
 import net.minecraft.util.math.MathHelper;
@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
  */
 public class DragonAnimator {
     // constants
-    protected final TameableDragon dragon;
+    protected final TameableDragonEntity dragon;
 
     // entity parameters
     protected float partialTicks;
@@ -45,7 +45,7 @@ public class DragonAnimator {
     // model flags
     protected boolean onGround;
 
-    public DragonAnimator(TameableDragon dragon) {
+    public DragonAnimator(TameableDragonEntity dragon) {
         this.dragon = dragon;
     }
 

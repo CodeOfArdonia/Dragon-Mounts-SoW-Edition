@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.event;
 
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.world.World;
@@ -14,5 +14,6 @@ public interface DragonGriefingCallback {
         return true;
     });
 
-    boolean allow(World world, TameableDragon dragon);
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    boolean allow(World world, TameableDragonEntity dragon);
 }

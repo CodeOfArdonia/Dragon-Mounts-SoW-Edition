@@ -1,7 +1,7 @@
 package com.iafenvoy.dragonmounts.abilities;
 
 import com.iafenvoy.dragonmounts.DragonMounts;
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -28,7 +28,7 @@ public class ReaperStepAbility extends FootprintAbility implements Ability.Facto
     public static final TagKey<Block> REAPER_TRANSFORM = TagKey.of(RegistryKeys.BLOCK, Identifier.of(DragonMounts.MOD_ID, "reaper_transform"));
 
     @Override
-    protected void placeFootprint(TameableDragon dragon, BlockPos pos) {
+    protected void placeFootprint(TameableDragonEntity dragon, BlockPos pos) {
         World world = dragon.getWorld();
         BlockState steppingOn = world.getBlockState(pos);
         if (steppingOn.isIn(PLANT_DEATH_TAG)) {
@@ -59,7 +59,7 @@ public class ReaperStepAbility extends FootprintAbility implements Ability.Facto
     }
 
     @Override
-    protected float getFootprintChance(TameableDragon dragon) {
+    protected float getFootprintChance(TameableDragonEntity dragon) {
         return 0.025f;
     }
 

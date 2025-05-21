@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.render.util;
 
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.iafenvoy.dragonmounts.registry.DMKeyBindings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -27,7 +27,7 @@ public class MountControlsMessenger {
     public static void tick(MinecraftClient client) {
         if (delay > 0) {
             ClientPlayerEntity player = client.player;
-            if (!(player.getVehicle() instanceof TameableDragon)) {
+            if (!(player.getVehicle() instanceof TameableDragonEntity)) {
                 delay = 0;
                 return;
             }

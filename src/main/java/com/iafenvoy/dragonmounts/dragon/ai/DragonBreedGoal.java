@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.dragon.ai;
 
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.iafenvoy.dragonmounts.event.DragonBreedCallback;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -10,9 +10,9 @@ import net.minecraft.world.GameRules;
 import java.util.List;
 
 public class DragonBreedGoal extends AnimalMateGoal {
-    private final TameableDragon dragon;
+    private final TameableDragonEntity dragon;
 
-    public DragonBreedGoal(TameableDragon animal) {
+    public DragonBreedGoal(TameableDragonEntity animal) {
         super(animal, 1);
         this.dragon = animal;
     }
@@ -24,11 +24,11 @@ public class DragonBreedGoal extends AnimalMateGoal {
         else return (this.mate = this.getNearbyMate()) != null;
     }
 
-    public TameableDragon getNearbyMate() {
-        List<TameableDragon> list = this.world.getNonSpectatingEntities(TameableDragon.class, this.dragon.getBoundingBox().expand(8d));
+    public TameableDragonEntity getNearbyMate() {
+        List<TameableDragonEntity> list = this.world.getNonSpectatingEntities(TameableDragonEntity.class, this.dragon.getBoundingBox().expand(8d));
         double dist = Double.MAX_VALUE;
-        TameableDragon closest = null;
-        for (TameableDragon entity : list)
+        TameableDragonEntity closest = null;
+        for (TameableDragonEntity entity : list)
             if (this.dragon.canBreedWith(entity) && this.dragon.squaredDistanceTo(entity) < dist) {
                 closest = entity;
                 dist = this.dragon.squaredDistanceTo(entity);

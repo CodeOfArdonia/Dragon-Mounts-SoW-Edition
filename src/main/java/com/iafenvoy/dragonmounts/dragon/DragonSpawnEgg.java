@@ -40,7 +40,7 @@ public class DragonSpawnEgg extends SpawnEggItem {
         NbtCompound root = new NbtCompound();
         // entity tag
         NbtCompound entityTag = new NbtCompound();
-        entityTag.putString(TameableDragon.NBT_BREED, id.toString());
+        entityTag.putString(TameableDragonEntity.NBT_BREED, id.toString());
         root.put(EntityType.ENTITY_TAG_KEY, entityTag);
         // name & colors
         // storing these in the stack nbt is more performant than getting the breed everytime
@@ -72,8 +72,8 @@ public class DragonSpawnEgg extends SpawnEggItem {
     public Optional<MobEntity> spawnBaby(PlayerEntity pPlayer, MobEntity pMob, EntityType<? extends MobEntity> pEntityType, ServerWorld pServerLevel, Vec3d pPos, ItemStack pStack) {
         NbtCompound entityTag = pStack.getSubNbt(EntityType.ENTITY_TAG_KEY);
         if (entityTag != null) {
-            String breedID = entityTag.getString(TameableDragon.NBT_BREED);
-            if (!breedID.isEmpty() && pMob instanceof TameableDragon dragon && dragon.getBreed() != BreedRegistry.get(breedID, pServerLevel.getRegistryManager()))
+            String breedID = entityTag.getString(TameableDragonEntity.NBT_BREED);
+            if (!breedID.isEmpty() && pMob instanceof TameableDragonEntity dragon && dragon.getBreed() != BreedRegistry.get(breedID, pServerLevel.getRegistryManager()))
                 return Optional.empty();
         }
         return super.spawnBaby(pPlayer, pMob, pEntityType, pServerLevel, pPos, pStack);
@@ -91,7 +91,7 @@ public class DragonSpawnEgg extends SpawnEggItem {
         if (DMConstants.server == null) return;
         NbtCompound root = stack.getOrCreateNbt();
         NbtCompound blockEntityData = stack.getOrCreateSubNbt(EntityType.ENTITY_TAG_KEY);
-        String breedId = blockEntityData.getString(TameableDragon.NBT_BREED);
+        String breedId = blockEntityData.getString(TameableDragonEntity.NBT_BREED);
         DynamicRegistryManager.Immutable regAcc = DMConstants.server.getRegistryManager();
         Registry<DragonBreed> reg = BreedRegistry.registry(regAcc);
         if (breedId.isEmpty() || !reg.containsId(new Identifier(breedId))) {// this item doesn't contain a breed yet?

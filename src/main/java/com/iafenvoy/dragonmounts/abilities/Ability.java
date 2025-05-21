@@ -1,7 +1,7 @@
 package com.iafenvoy.dragonmounts.abilities;
 
 import com.iafenvoy.dragonmounts.DragonMounts;
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.mojang.serialization.Codec;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
@@ -46,6 +46,7 @@ public interface Ability {
     Identifier REAPER_STEP = reg("reaper_step", ReaperStepAbility.CODEC);
     Identifier HYDRO_STEP = reg("hydro_step", HydroStepAbility.CODEC);
 
+    @SuppressWarnings("unchecked")
     static <T extends Ability> Identifier register(Identifier name, Codec<? extends Factory<T>> codec) {
         REGISTRY.put(name, (Codec) codec); // hacky generics cast
         return name;
@@ -55,25 +56,25 @@ public interface Ability {
         return register(Identifier.of(DragonMounts.MOD_ID, name), codec);
     }
 
-    default void initialize(TameableDragon dragon) {
+    default void initialize(TameableDragonEntity dragon) {
     }
 
-    default void close(TameableDragon dragon) {
+    default void close(TameableDragonEntity dragon) {
     }
 
-    default void write(TameableDragon dragon, NbtCompound nbt) {
+    default void write(TameableDragonEntity dragon, NbtCompound nbt) {
     }
 
-    default void read(TameableDragon dragon, NbtCompound nbt) {
+    default void read(TameableDragonEntity dragon, NbtCompound nbt) {
     }
 
-    default void tick(TameableDragon dragon) {
+    default void tick(TameableDragonEntity dragon) {
     }
 
     /**
      * Only called on the server
      */
-    default void onMove(TameableDragon dragon) {
+    default void onMove(TameableDragonEntity dragon) {
     }
 
     /**

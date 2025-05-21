@@ -35,6 +35,6 @@ public class DragonEggModel extends EntityModel<Entity> {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-        bone.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        this.bone.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 }

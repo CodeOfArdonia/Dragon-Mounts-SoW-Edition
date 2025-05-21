@@ -1,14 +1,14 @@
 package com.iafenvoy.dragonmounts.dragon.ai;
 
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.util.math.MathHelper;
 
 public class DragonMoveController extends MoveControl {
-    private final TameableDragon dragon;
+    private final TameableDragonEntity dragon;
 
-    public DragonMoveController(TameableDragon dragon) {
+    public DragonMoveController(TameableDragonEntity dragon) {
         super(dragon);
         this.dragon = dragon;
     }

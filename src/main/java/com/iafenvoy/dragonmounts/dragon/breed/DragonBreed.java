@@ -5,10 +5,12 @@ import com.google.common.collect.ImmutableMap;
 import com.iafenvoy.dragonmounts.DragonMounts;
 import com.iafenvoy.dragonmounts.abilities.Ability;
 import com.iafenvoy.dragonmounts.config.DMCommonConfig;
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.iafenvoy.dragonmounts.dragon.egg.HatchableEggBlock;
 import com.iafenvoy.dragonmounts.habitats.Habitat;
+import com.iafenvoy.dragonmounts.particle.DragonParticleEffect;
 import com.iafenvoy.dragonmounts.registry.DMEntities;
+import com.iafenvoy.dragonmounts.registry.DMParticles;
 import com.iafenvoy.dragonmounts.util.DMLUtil;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
@@ -20,7 +22,6 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.item.Item;
 import net.minecraft.loot.LootTables;
-import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.*;
@@ -29,7 +30,6 @@ import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
 import java.util.ArrayList;
@@ -55,9 +55,9 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
             RegistryCodecs.entryList(RegistryKeys.DAMAGE_TYPE).optionalFieldOf("immunities", RegistryEntryList.of()).forGetter(DragonBreed::immunities),
             SoundEvent.ENTRY_CODEC.optionalFieldOf("ambient_sound").forGetter(DragonBreed::ambientSound),
             Identifier.CODEC.optionalFieldOf("death_loot", LootTables.EMPTY).forGetter(DragonBreed::deathLoot),
-            Codec.INT.optionalFieldOf("growth_time", TameableDragon.BASE_GROWTH_TIME).forGetter(DragonBreed::growthTime),
+            Codec.INT.optionalFieldOf("growth_time", TameableDragonEntity.BASE_GROWTH_TIME).forGetter(DragonBreed::growthTime),
             Codec.FLOAT.optionalFieldOf("hatch_chance", HatchableEggBlock.DEFAULT_HATCH_CHANCE).forGetter(DragonBreed::hatchChance),
-            Codec.FLOAT.optionalFieldOf("size_modifier", TameableDragon.BASE_SIZE_MODIFIER).forGetter(DragonBreed::sizeModifier),
+            Codec.FLOAT.optionalFieldOf("size_modifier", TameableDragonEntity.BASE_SIZE_MODIFIER).forGetter(DragonBreed::sizeModifier),
             RegistryCodecs.entryList(RegistryKeys.ITEM).optionalFieldOf("taming_items", Registries.ITEM.getOrCreateEntryList(ItemTags.FISHES)).forGetter(DragonBreed::tamingItems),
             RegistryCodecs.entryList(RegistryKeys.ITEM).optionalFieldOf("breeding_items", Registries.ITEM.getOrCreateEntryList(ItemTags.FISHES)).forGetter(DragonBreed::breedingItems),
             Codec.either(Codec.INT, Codec.STRING).optionalFieldOf("reproduction_limit", Either.left(-1)).forGetter(DragonBreed::reproLimit)
@@ -68,14 +68,14 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
             ParticleTypes.TYPE_CODEC.optionalFieldOf("hatch_particles").forGetter(DragonBreed::hatchParticles),
             SoundEvent.ENTRY_CODEC.optionalFieldOf("ambient_sound").forGetter(DragonBreed::ambientSound),
             Codec.INT.fieldOf("growth_time").forGetter(DragonBreed::growthTime),
-            Codec.FLOAT.optionalFieldOf("size_modifier", TameableDragon.BASE_SIZE_MODIFIER).forGetter(DragonBreed::sizeModifier)
+            Codec.FLOAT.optionalFieldOf("size_modifier", TameableDragonEntity.BASE_SIZE_MODIFIER).forGetter(DragonBreed::sizeModifier)
     ).apply(instance, DragonBreed::fromNetwork));
 
     public static DragonBreed fromNetwork(int primaryColor, int secondaryColor, Optional<ParticleEffect> hatchParticles, Optional<RegistryEntry<SoundEvent>> ambientSound, int growthTime, float sizeModifier) {
         return new DragonBreed(primaryColor, secondaryColor, hatchParticles, Map.of(), List.of(), List.of(), RegistryEntryList.of(), ambientSound, LootTables.EMPTY, growthTime, 0, sizeModifier, RegistryEntryList.of(), RegistryEntryList.of(), Either.left(0));
     }
 
-    public void initialize(TameableDragon dragon) {
+    public void initialize(TameableDragonEntity dragon) {
         this.applyAttributes(dragon);
         for (Ability.Factory<Ability> factory : this.abilityTypes()) {
             Ability instance = factory.create();
@@ -84,7 +84,7 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
         }
     }
 
-    public void close(TameableDragon dragon) {
+    public void close(TameableDragonEntity dragon) {
         this.cleanAttributes(dragon);
         for (Ability ability : dragon.getAbilities()) ability.close(dragon);
         dragon.getAbilities().clear();
@@ -102,7 +102,7 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
         return "dragon_breed." + id.replace(':', '.');
     }
 
-    private void applyAttributes(TameableDragon dragon) {
+    private void applyAttributes(TameableDragonEntity dragon) {
         float healthFrac = dragon.getHealthFraction(); // in case max health is changed
         this.attributes().forEach((att, value) -> {
             EntityAttributeInstance inst = dragon.getAttributeInstance(att);
@@ -111,7 +111,7 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
         dragon.setHealth(dragon.getMaxHealth() * healthFrac);
     }
 
-    private void cleanAttributes(TameableDragon dragon) {
+    private void cleanAttributes(TameableDragonEntity dragon) {
         float healthFrac = dragon.getHealthFraction(); // in case max health is changed
         DefaultAttributeContainer defaults = DefaultAttributeRegistry.get(DMEntities.DRAGON);
         this.attributes().forEach((att, value) -> {
@@ -125,11 +125,15 @@ public record DragonBreed(int primaryColor, int secondaryColor, Optional<Particl
     }
 
     public ParticleEffect getHatchingParticles(Random random) {
-        return this.hatchParticles().orElseGet(() -> this.dustParticleFor(random, 1));
+        return this.hatchParticles().orElseGet(() -> new DragonParticleEffect(DMParticles.DRAGON_DROP, random.nextDouble() < 0.75 ? this.primaryColor() : this.secondaryColor(), 1));
     }
 
-    public DustParticleEffect dustParticleFor(Random random, float scale) {
-        return new DustParticleEffect(Vec3d.unpackRgb(random.nextDouble() < 0.75 ? this.primaryColor() : this.secondaryColor()).toVector3f(), scale);
+    public DragonParticleEffect dragonParticleFor(Random random, float scale) {
+        return new DragonParticleEffect(switch (random.nextBetween(0, 2)) {
+            case 0 -> DMParticles.DRAGON_DROP;
+            case 1 -> DMParticles.DRAGON_DUST;
+            default -> DMParticles.DRAGON_WIND;
+        }, random.nextDouble() < 0.75 ? this.primaryColor() : this.secondaryColor(), scale);
     }
 
     public static final class BuiltIn {

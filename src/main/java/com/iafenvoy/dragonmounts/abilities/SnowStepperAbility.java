@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.abilities;
 
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -15,7 +15,7 @@ public class SnowStepperAbility extends FootprintAbility implements Ability.Fact
     public static final Codec<SnowStepperAbility> CODEC = Codec.unit(INSTANCE);
 
     @Override
-    protected void placeFootprint(TameableDragon dragon, BlockPos pos) {
+    protected void placeFootprint(TameableDragonEntity dragon, BlockPos pos) {
         World world = dragon.getWorld();
         BlockState state = Blocks.SNOW.getDefaultState();
         if (world.getBlockState(pos).isAir() && state.canPlaceAt(world, pos)) {
@@ -29,7 +29,7 @@ public class SnowStepperAbility extends FootprintAbility implements Ability.Fact
     }
 
     @Override
-    protected float getFootprintChance(TameableDragon dragon) {
+    protected float getFootprintChance(TameableDragonEntity dragon) {
         BlockPos pos = dragon.getBlockPos();
         return dragon.getWorld().getBiome(pos).value().isCold(pos) ? 0.5f : 0;
     }

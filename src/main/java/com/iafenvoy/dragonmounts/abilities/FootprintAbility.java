@@ -1,12 +1,12 @@
 package com.iafenvoy.dragonmounts.abilities;
 
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.iafenvoy.dragonmounts.event.DragonGriefingCallback;
 import net.minecraft.util.math.BlockPos;
 
 public abstract class FootprintAbility implements Ability {
     @Override
-    public void onMove(TameableDragon dragon) {
+    public void onMove(TameableDragonEntity dragon) {
         if (dragon.getAgeProgress() < 0.5 || !dragon.isOnGround()) return;
         if (!DragonGriefingCallback.EVENT.invoker().allow(dragon.getWorld(), dragon)) return;
 
@@ -26,9 +26,9 @@ public abstract class FootprintAbility implements Ability {
         }
     }
 
-    protected float getFootprintChance(TameableDragon dragon) {
+    protected float getFootprintChance(TameableDragonEntity dragon) {
         return 0.05f;
     }
 
-    protected abstract void placeFootprint(TameableDragon dragon, BlockPos pos);
+    protected abstract void placeFootprint(TameableDragonEntity dragon, BlockPos pos);
 }

@@ -3,7 +3,7 @@ package com.iafenvoy.dragonmounts.registry;
 import com.iafenvoy.dragonmounts.DMConstants;
 import com.iafenvoy.dragonmounts.DragonMounts;
 import com.iafenvoy.dragonmounts.config.DMClientConfig;
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -29,12 +29,12 @@ public final class DMKeyBindings {
         KeyBindingRegistryImpl.registerKeyBinding(DRAGON_ATTACK);
         KeyBindingRegistryImpl.registerKeyBinding(CAMERA_CONTROLS);
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.player != null && client.player.getVehicle() instanceof TameableDragon dragon) {
+            if (client.player != null && client.player.getVehicle() instanceof TameableDragonEntity dragon) {
                 if (CAMERA_CONTROLS.wasPressed()) {
                     DMClientConfig.INSTANCE.MISC.cameraDrivenFlight.setValue(!DMClientConfig.INSTANCE.MISC.cameraDrivenFlight.getValue());
                     client.player.sendMessage(Text.translatable("mount.dragon.camera_controls." + (DMClientConfig.INSTANCE.MISC.cameraDrivenFlight.getValue() ? "enabled" : "disabled"), dragon.getDisplayName()), true);
                 }
-                if (DRAGON_ATTACK.isPressed() && dragon.getOwner() == client.player)
+                if (DRAGON_ATTACK.isPressed())
                     ClientPlayNetworking.send(DMConstants.DRAGON_ATTACK, PacketByteBufs.create());
             }
         });

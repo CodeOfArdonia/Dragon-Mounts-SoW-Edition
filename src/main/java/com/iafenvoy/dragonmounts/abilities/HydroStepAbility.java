@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.abilities;
 
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,7 +19,7 @@ public class HydroStepAbility extends FootprintAbility implements Ability.Factor
     public static final Codec<HydroStepAbility> CODEC = Codec.unit(INSTANCE);
 
     @Override
-    protected void placeFootprint(TameableDragon dragon, BlockPos pos) {
+    protected void placeFootprint(TameableDragonEntity dragon, BlockPos pos) {
         World world = dragon.getWorld();
         BlockPos groundPos = pos.down();
         BlockState steppingOn = world.getBlockState(groundPos);
@@ -59,7 +59,7 @@ public class HydroStepAbility extends FootprintAbility implements Ability.Factor
     }
 
     @Override
-    protected float getFootprintChance(TameableDragon dragon) {
+    protected float getFootprintChance(TameableDragonEntity dragon) {
         return 1f; // guaranteed
     }
 

@@ -14,7 +14,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -122,17 +121,14 @@ public class HatchableEggBlockEntity extends BlockEntity implements Nameable {
         if (this.breed.get() == null) return;
         if (world instanceof ServerWorld serverWorld && !DMCommonConfig.INSTANCE.COMMON.randomTickHatch.getValue() && this.hatchTick >= DMCommonConfig.INSTANCE.COMMON.getHatchTime(this.breed.get().id(this.getWorld().getRegistryManager()).toString()) / 4)
             DMBlocks.EGG_BLOCK.randomTick(state, serverWorld, pos, world.random);
-        if (state.get(HatchableEggBlock.HATCHING))
-            for (int i = 0; i < 5; i++) {
-                BlockPos p = this.getPos();
-                Random random = new LocalRandom(System.currentTimeMillis());
-                double px = pos.getX() + random.nextDouble();
-                double py = pos.getY() + random.nextDouble();
-                double pz = pos.getZ() + random.nextDouble();
-                DragonBreed breed1 = this.breed.get();
-                DustParticleEffect particle = breed1.dustParticleFor(random, 1);
-                HatchableEggBlockEntity.this.getWorld().addParticle(particle, px, py, pz, 0, 0, 0);
-            }
+        if (state.get(HatchableEggBlock.HATCHING)) {
+            Random random = new LocalRandom(System.currentTimeMillis());
+            double px = pos.getX() + random.nextDouble();
+            double py = pos.getY() + random.nextDouble();
+            double pz = pos.getZ() + random.nextDouble();
+            DragonBreed breed1 = this.breed.get();
+            HatchableEggBlockEntity.this.getWorld().addParticle(breed1.getHatchingParticles(random), px, py, pz, 0, 0, 0);
+        }
     }
 
     @SuppressWarnings("ConstantConditions") // level exists at this point

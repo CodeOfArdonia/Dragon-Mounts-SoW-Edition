@@ -1,7 +1,7 @@
 package com.iafenvoy.dragonmounts.render.animator;
 
 import com.iafenvoy.dragonmounts.DMConstants;
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.render.model.DragonModel;
 import com.iafenvoy.dragonmounts.render.util.ModelPartAccess;
@@ -89,7 +89,7 @@ public class ClientDragonAnimator extends DragonAnimator {
     // Y rotation angles for air, thigh only
     private final float[] yAirAll = {-0.1f, 0.1f};
 
-    public ClientDragonAnimator(TameableDragon dragon) {
+    public ClientDragonAnimator(TameableDragonEntity dragon) {
         super(dragon);
     }
 
@@ -196,8 +196,7 @@ public class ClientDragonAnimator extends DragonAnimator {
             Vec3d unit = DMMath.getRotationVectorUnit(this.dragon.getPitch() + model.head.pitch, this.dragon.getYaw() + model.head.yaw);
             DragonBreed breed = this.dragon.getBreed();
             DMConstants.shouldForceParticleSpeed = true;
-            for (int i = 0; i < 5; i++)
-                MinecraftClient.getInstance().world.addParticle(breed.dustParticleFor(random, this.dragon.getScaleFactor() * 3), pos.x, pos.y, pos.z, unit.x + R.get(), unit.y + R.get(), unit.z + R.get());
+            MinecraftClient.getInstance().world.addParticle(breed.dragonParticleFor(random, this.dragon.getScaleFactor() * 3), pos.x, pos.y, pos.z, unit.x + R.get(), unit.y + R.get(), unit.z + R.get());
             DMConstants.shouldForceParticleSpeed = false;
         }
     }

@@ -5,10 +5,7 @@ import com.iafenvoy.dragonmounts.abilities.Ability;
 import com.iafenvoy.dragonmounts.config.DMClientConfig;
 import com.iafenvoy.dragonmounts.config.DMCommonConfig;
 import com.iafenvoy.dragonmounts.data.CrossBreedingManager;
-import com.iafenvoy.dragonmounts.dragon.ai.DragonBodyController;
-import com.iafenvoy.dragonmounts.dragon.ai.DragonBreedGoal;
-import com.iafenvoy.dragonmounts.dragon.ai.DragonFollowOwnerGoal;
-import com.iafenvoy.dragonmounts.dragon.ai.DragonMoveController;
+import com.iafenvoy.dragonmounts.dragon.ai.*;
 import com.iafenvoy.dragonmounts.dragon.breed.BreedRegistry;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.dragon.egg.HatchableEggBlock;
@@ -86,7 +83,7 @@ import static net.minecraft.entity.attribute.EntityAttributes.*;
  * @author Kay9
  */
 @SuppressWarnings({"deprecation", "SameReturnValue"})
-public class TameableDragon extends TameableEntity implements Saddleable, Flutterer, Mount {
+public class TameableDragonEntity extends TameableEntity implements Saddleable, Flutterer, Mount {
     // base attributes
     public static final double BASE_SPEED_GROUND = 0.3; // actual speed varies from ground friction
     public static final double BASE_SPEED_FLYING = 0.32;
@@ -99,10 +96,10 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     public static final int BASE_GROWTH_TIME = 72000;
     public static final float BASE_SIZE_MODIFIER = 1.0f;
     // data value IDs
-    private static final TrackedData<String> DATA_BREED = DataTracker.registerData(TameableDragon.class, TrackedDataHandlerRegistry.STRING);
-    private static final TrackedData<Boolean> DATA_SADDLED = DataTracker.registerData(TameableDragon.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Integer> DATA_AGE = DataTracker.registerData(TameableDragon.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Integer> DATA_ATTACKING = DataTracker.registerData(TameableDragon.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<String> DATA_BREED = DataTracker.registerData(TameableDragonEntity.class, TrackedDataHandlerRegistry.STRING);
+    private static final TrackedData<Boolean> DATA_SADDLED = DataTracker.registerData(TameableDragonEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Integer> DATA_AGE = DataTracker.registerData(TameableDragonEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> DATA_ATTACKING = DataTracker.registerData(TameableDragonEntity.class, TrackedDataHandlerRegistry.INTEGER);
     // data NBT IDs
     public static final String NBT_BREED = "Breed";
     private static final String NBT_SADDLED = "Saddle";
@@ -122,7 +119,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     private final MobNavigation groundNavigation;
     private final BirdNavigation flyingNavigation;
 
-    public TameableDragon(EntityType<? extends TameableDragon> type, World level) {
+    public TameableDragonEntity(EntityType<? extends TameableDragonEntity> type, World level) {
         super(type, level);
         this.ignoreCameraFrustum = true;
         this.moveControl = new DragonMoveController(this);
@@ -152,7 +149,6 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
 
     @Override
     protected void initGoals() {// TODO: Much Smarter AI and features
-//        goalSelector.addGoal(1, new DragonLandGoal(this));
         this.goalSelector.add(1, new SwimGoal(this));
         this.goalSelector.add(2, new SitGoal(this));
         this.goalSelector.add(3, new MeleeAttackGoal(this, 1, true));
@@ -162,11 +158,12 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         this.goalSelector.add(6, new WanderAroundFarGoal(this, 0.85f));
         this.goalSelector.add(7, new LookAtEntityGoal(this, LivingEntity.class, 16f));
         this.goalSelector.add(8, new LookAroundGoal(this));
+        this.goalSelector.add(10, new DragonLandGoal(this));
 
         this.targetSelector.add(0, new TrackOwnerAttackerGoal(this));
         this.targetSelector.add(1, new AttackWithOwnerGoal(this));
         this.targetSelector.add(2, new RevengeGoal(this));
-        this.targetSelector.add(3, new UntamedActiveTargetGoal<>(this, AnimalEntity.class, false, e -> !(e instanceof TameableDragon)));
+        this.targetSelector.add(3, new UntamedActiveTargetGoal<>(this, AnimalEntity.class, false, e -> !(e instanceof TameableDragonEntity)));
     }
 
     @Override
@@ -246,6 +243,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     /**
      * Returns true if the dragon is saddled.
      */
+    @Override
     public boolean isSaddled() {
         return this.dataTracker.get(DATA_SADDLED);
     }
@@ -281,17 +279,10 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         if (this.isInAir()) return !this.isOnGround(); // more natural landings
         return this.canFly() && !this.isTouchingWater() && !this.isNearGround();
     }
-
-    /**
-     * Returns true if the entity is flying.
-     */
+    @Override
     public boolean isInAir() {
         return this.flying;
     }
-
-    /**
-     * Set the flying flag of the entity.
-     */
     public void setFlying(boolean flying) {
         this.flying = flying;
     }
@@ -339,7 +330,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         if (attackTick > 0) {
             attackTick--;
             this.dataTracker.set(DATA_ATTACKING, attackTick);
-            List<Entity> result = WorldUtil.raycastAll(this, 40, 2, entity -> this.getPassengerList().contains(entity) || entity instanceof TameableDragon dragon && dragon.breed == this.breed);
+            List<Entity> result = WorldUtil.raycastAll(this, 40, 2, entity -> this.getPassengerList().contains(entity) || entity instanceof TameableDragonEntity dragon && dragon.breed == this.breed);
             DamageSource damageSource = this.getWorld().getDamageSources().mobAttack(this);
             result.forEach(x -> x.damage(damageSource, 1));
         }
@@ -709,7 +700,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     @Override
     public boolean canBreedWith(AnimalEntity mate) {
         if (mate == this) return false; // No. Just... no.
-        if (!(mate instanceof TameableDragon dragonMate)) return false;
+        if (!(mate instanceof TameableDragonEntity dragonMate)) return false;
         if (!this.canReproduce()) return false;
         if (!dragonMate.canReproduce()) return false;
         return this.isInLove() && mate.isInLove();
@@ -723,8 +714,9 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     }
 
     @Override
+    @SuppressWarnings("ConstantConditions")
     public void breed(ServerWorld level, AnimalEntity animal) {
-        if (!(animal instanceof TameableDragon mate)) {
+        if (!(animal instanceof TameableDragonEntity mate)) {
             DragonMounts.LOGGER.warn("Tried to mate with non-dragon? Hello? {}", animal);
             return;
         }
@@ -766,7 +758,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
 
     @Override
     public PassiveEntity createChild(ServerWorld level, PassiveEntity mob) {
-        TameableDragon offspring = DMEntities.DRAGON.create(level);
+        TameableDragonEntity offspring = DMEntities.DRAGON.create(level);
         if (this.getBreed() != null && offspring != null) offspring.setBreed(this.getBreed());
         return offspring;
     }
@@ -808,12 +800,15 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     protected void removePassenger(Entity passenger) {
         if (this.hasLocalDriver()) MountCameraManager.onDragonDismount();
         super.removePassenger(passenger);
-        if (!this.hasPassengers()) {
+        if (!this.hasPassengers() && !this.isNearGround()) {
             BlockPos pos = this.getBlockPos();
             World world = this.getWorld();
-            while (!world.getBlockState(pos).isAir() && world.isOutOfHeightLimit(pos)) pos = pos.down();
-            if (!world.isOutOfHeightLimit(pos))
+            while (world.getBlockState(pos).isAir() && world.isOutOfHeightLimit(pos)) pos = pos.down();
+            if (!world.isOutOfHeightLimit(pos)) {
+                pos = pos.up();
+                this.navigation.stop();
                 this.navigation.startMovingTo(pos.getX(), pos.getY(), pos.getZ(), this.getMovementSpeed());
+            }
         }
     }
 
@@ -901,7 +896,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
     /**
      * Updates properties/attributes/traits of dragons based on the current age scale.
      * Also syncs the current age to the client.
-     * Called at an interval (of ticks) described by {@link TameableDragon#AGE_UPDATE_INTERVAL}
+     * Called at an interval (of ticks) described by {@link TameableDragonEntity#AGE_UPDATE_INTERVAL}
      */
     @SuppressWarnings("ConstantConditions")
     private void updateAgeProperties() {
@@ -938,6 +933,7 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         return !(this.getAgeProgress() >= 1f);
     }
 
+    @Override
     public boolean isAttacking() {
         return this.dataTracker.get(DATA_ATTACKING) > 0;
     }
@@ -965,7 +961,6 @@ public class TameableDragon extends TameableEntity implements Saddleable, Flutte
         this.dataTracker.set(DATA_AGE, this.getBreedingAge());
     }
 
-    // simple helper method to determine if we're on the server thread.
     public boolean isServer() {
         return !this.getWorld().isClient;
     }

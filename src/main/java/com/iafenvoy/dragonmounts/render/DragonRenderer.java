@@ -2,7 +2,7 @@ package com.iafenvoy.dragonmounts.render;
 
 import com.google.common.collect.ImmutableMap;
 import com.iafenvoy.dragonmounts.DragonMounts;
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.iafenvoy.dragonmounts.dragon.breed.DragonBreed;
 import com.iafenvoy.dragonmounts.render.animator.DragonAnimator;
 import com.iafenvoy.dragonmounts.render.model.DragonModel;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public class DragonRenderer extends MobEntityRenderer<TameableDragon, DragonModel> {
+public class DragonRenderer extends MobEntityRenderer<TameableDragonEntity, DragonModel> {
     public static final EntityModelLayer MODEL_LOCATION = new EntityModelLayer(Identifier.of(DragonMounts.MOD_ID, "dragon"), "main");
     private static final Identifier[] DEFAULT_TEXTURES = computeTextureCacheFor(DragonBreed.BuiltIn.END.getValue());
     private static final Identifier DISSOLVE_TEXTURE = Identifier.of(DragonMounts.MOD_ID, "textures/entity/dragon/dissolve.png");
@@ -47,18 +47,18 @@ public class DragonRenderer extends MobEntityRenderer<TameableDragon, DragonMode
     }
 
     @Override
-    public boolean shouldRender(TameableDragon dragon, Frustum pCamera, double pCamX, double pCamY, double pCamZ) {
+    public boolean shouldRender(TameableDragonEntity dragon, Frustum pCamera, double pCamX, double pCamY, double pCamZ) {
         return dragon.getBreed() != null && super.shouldRender(dragon, pCamera, pCamX, pCamY, pCamZ);
     }
 
     @Override
-    public void render(TameableDragon dragon, float pEntityYaw, float pPartialTicks, MatrixStack pMatrixStack, VertexConsumerProvider pBuffer, int pPackedLight) {
+    public void render(TameableDragonEntity dragon, float pEntityYaw, float pPartialTicks, MatrixStack pMatrixStack, VertexConsumerProvider pBuffer, int pPackedLight) {
         this.model = this.getModel(dragon);
         super.render(dragon, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
     }
 
     @SuppressWarnings("ConstantConditions")
-    private DragonModel getModel(TameableDragon dragon) {
+    private DragonModel getModel(TameableDragonEntity dragon) {
         DragonBreed breed = dragon.getBreed();
         if (breed == null) return this.defaultModel;
 
@@ -71,12 +71,12 @@ public class DragonRenderer extends MobEntityRenderer<TameableDragon, DragonMode
     // During death, do not use the standard rendering and let the death layer handle it. Hacky, but better than mixins.
     @Nullable
     @Override
-    protected RenderLayer getRenderLayer(TameableDragon entity, boolean visible, boolean invisToClient, boolean glowing) {
+    protected RenderLayer getRenderLayer(TameableDragonEntity entity, boolean visible, boolean invisToClient, boolean glowing) {
         return entity.deathTime > 0 ? null : super.getRenderLayer(entity, visible, invisToClient, glowing);
     }
 
     @Override
-    public Identifier getTexture(TameableDragon dragon) {
+    public Identifier getTexture(TameableDragonEntity dragon) {
         return this.getTextureForLayer(dragon.getBreed(), LAYER_BODY);
     }
 
@@ -89,7 +89,7 @@ public class DragonRenderer extends MobEntityRenderer<TameableDragon, DragonMode
     }
 
     @Override
-    protected void setupTransforms(TameableDragon dragon, MatrixStack ps, float age, float yaw, float partials) {
+    protected void setupTransforms(TameableDragonEntity dragon, MatrixStack ps, float age, float yaw, float partials) {
         super.setupTransforms(dragon, ps, age, yaw, partials);
         DragonAnimator animator = dragon.getAnimator();
         float scale = dragon.getScaleFactor();
@@ -102,7 +102,7 @@ public class DragonRenderer extends MobEntityRenderer<TameableDragon, DragonMode
 
     // dragons dissolve during death, not flip.
     @Override
-    protected float getLyingAngle(TameableDragon pLivingEntity) {
+    protected float getLyingAngle(TameableDragonEntity pLivingEntity) {
         return 0;
     }
 
@@ -122,25 +122,25 @@ public class DragonRenderer extends MobEntityRenderer<TameableDragon, DragonMode
         return cache;
     }
 
-    public final FeatureRenderer<TameableDragon, DragonModel> GLOW_LAYER = new FeatureRenderer<>(this) {
+    public final FeatureRenderer<TameableDragonEntity, DragonModel> GLOW_LAYER = new FeatureRenderer<>(this) {
         @Override
-        public void render(MatrixStack pMatrixStack, VertexConsumerProvider buffer, int pPackedLight, TameableDragon dragon, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        public void render(MatrixStack pMatrixStack, VertexConsumerProvider buffer, int pPackedLight, TameableDragonEntity dragon, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
             if (dragon.deathTime == 0) {
                 RenderLayer type = CustomRenderTypes.glow(DragonRenderer.this.getTextureForLayer(dragon.getBreed(), LAYER_GLOW));
                 DragonRenderer.this.model.render(pMatrixStack, buffer.getBuffer(type), pPackedLight, OverlayTexture.DEFAULT_UV, 1f, 1f, 1f, 1f);
             }
         }
     };
-    public final FeatureRenderer<TameableDragon, DragonModel> SADDLE_LAYER = new FeatureRenderer<>(this) {
+    public final FeatureRenderer<TameableDragonEntity, DragonModel> SADDLE_LAYER = new FeatureRenderer<>(this) {
         @Override
-        public void render(MatrixStack ps, VertexConsumerProvider buffer, int light, TameableDragon dragon, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        public void render(MatrixStack ps, VertexConsumerProvider buffer, int light, TameableDragonEntity dragon, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
             if (dragon.isSaddled())
                 renderModel(DragonRenderer.this.model, DragonRenderer.this.getTextureForLayer(dragon.getBreed(), LAYER_SADDLE), ps, buffer, light, dragon, 1f, 1f, 1f);
         }
     };
-    public final FeatureRenderer<TameableDragon, DragonModel> DEATH_LAYER = new FeatureRenderer<>(this) {
+    public final FeatureRenderer<TameableDragonEntity, DragonModel> DEATH_LAYER = new FeatureRenderer<>(this) {
         @Override
-        public void render(MatrixStack ps, VertexConsumerProvider buffer, int light, TameableDragon dragon, float limbSwing, float limbSwingAmount, float partials, float age, float yaw, float pitch) {
+        public void render(MatrixStack ps, VertexConsumerProvider buffer, int light, TameableDragonEntity dragon, float limbSwing, float limbSwingAmount, float partials, float age, float yaw, float pitch) {
             if (dragon.deathTime > 0) {
                 float delta = dragon.deathTime / (float) dragon.getMaxDeathTime();
                 DragonRenderer.this.model.render(ps, buffer.getBuffer(CustomRenderTypes.DISSOLVE), light, OverlayTexture.DEFAULT_UV, 1f, 1f, 1f, delta);

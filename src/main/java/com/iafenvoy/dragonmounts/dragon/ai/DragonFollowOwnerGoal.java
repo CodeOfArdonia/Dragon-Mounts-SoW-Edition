@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.dragon.ai;
 
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.LivingEntity;
@@ -27,7 +27,7 @@ public class DragonFollowOwnerGoal extends Goal {
     private static final int MAX_HORIZONTAL_DISTANCE_FROM_PLAYER_WHEN_TELEPORTING = 3;
     private static final int MIN_VERTICAL_DISTANCE_FROM_PLAYER_WHEN_TELEPORTING = 0;
     private static final int MAX_VERTICAL_DISTANCE_FROM_PLAYER_WHEN_TELEPORTING = 1;
-    private final TameableDragon dragon;
+    private final TameableDragonEntity dragon;
     private LivingEntity owner;
     private final WorldView level;
     private final double speedModifier;
@@ -37,7 +37,7 @@ public class DragonFollowOwnerGoal extends Goal {
     private final float teleportDistance;
     private float oldWaterCost;
 
-    public DragonFollowOwnerGoal(TameableDragon dragon, double speedModifier, float startDistance, float stopDistance, float teleportDistance) {
+    public DragonFollowOwnerGoal(TameableDragonEntity dragon, double speedModifier, float startDistance, float stopDistance, float teleportDistance) {
         this.dragon = dragon;
         this.level = dragon.getWorld();
         this.speedModifier = speedModifier;
@@ -47,6 +47,7 @@ public class DragonFollowOwnerGoal extends Goal {
         this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
     }
 
+    @Override
     public boolean canStart() {
         LivingEntity livingentity = this.dragon.getOwner();
         if (livingentity == null) return false;
@@ -58,23 +59,27 @@ public class DragonFollowOwnerGoal extends Goal {
         return true;
     }
 
+    @Override
     public boolean shouldContinue() {
         if (this.dragon.getNavigation().isIdle()) return false;
         if (this.dragon.isSitting()) return false;
         return this.dragon.squaredDistanceTo(this.owner) >= (double) (this.stopDistance * this.stopDistance);
     }
 
+    @Override
     public void start() {
         this.timeToRecalcPath = 0;
         this.oldWaterCost = this.dragon.getPathfindingPenalty(PathNodeType.WATER);
         this.dragon.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
     }
 
+    @Override
     public void stop() {
         this.dragon.getNavigation().stop();
         this.dragon.setPathfindingPenalty(PathNodeType.WATER, this.oldWaterCost);
     }
 
+    @Override
     public void tick() {
         this.dragon.getLookControl().lookAt(this.owner, 10.0F, (float) this.dragon.getMaxLookPitchChange());
         if (--this.timeToRecalcPath <= 0) {

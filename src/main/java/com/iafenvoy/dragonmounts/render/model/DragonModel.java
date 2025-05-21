@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.render.model;
 
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.iafenvoy.dragonmounts.render.animator.ClientDragonAnimator;
 import com.iafenvoy.dragonmounts.render.animator.DragonAnimator;
 import com.iafenvoy.dragonmounts.render.util.ModelPartAccess;
@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 @SuppressWarnings("UnnecessaryLocalVariable")
-public class DragonModel extends EntityModel<TameableDragon> {
+public class DragonModel extends EntityModel<TameableDragonEntity> {
     // model constants
     public static final int NECK_SIZE = 10;
     public static final int TAIL_SIZE = 10;
@@ -307,13 +307,13 @@ public class DragonModel extends EntityModel<TameableDragon> {
     }
 
     @Override
-    public void animateModel(TameableDragon dragon, float pLimbSwing, float pLimbSwingAmount, float pPartialTick) {
+    public void animateModel(TameableDragonEntity dragon, float pLimbSwing, float pLimbSwingAmount, float pPartialTick) {
         this.size = Math.min(dragon.getScaleFactor(), 1);
         dragon.getAnimator().setPartialTicks(pPartialTick);
     }
 
     @Override
-    public void setAngles(TameableDragon dragon, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+    public void setAngles(TameableDragonEntity dragon, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         DragonAnimator animator = dragon.getAnimator();
         animator.setLook(pNetHeadYaw, pHeadPitch);
         animator.setMovement(pLimbSwing, pLimbSwingAmount * dragon.getScaleFactor());

@@ -1,6 +1,6 @@
 package com.iafenvoy.dragonmounts.abilities;
 
-import com.iafenvoy.dragonmounts.dragon.TameableDragon;
+import com.iafenvoy.dragonmounts.dragon.TameableDragonEntity;
 import com.iafenvoy.dragonmounts.event.DragonBlockPlaceCallback;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
@@ -32,17 +32,17 @@ public class FrostWalkerAbility implements Ability, Ability.Factory<FrostWalkerA
     }
 
     @Override
-    public void initialize(TameableDragon dragon) {
+    public void initialize(TameableDragonEntity dragon) {
         dragon.setPathfindingPenalty(PathNodeType.WATER, 0);
     }
 
     @Override
-    public void close(TameableDragon dragon) {
+    public void close(TameableDragonEntity dragon) {
         dragon.setPathfindingPenalty(PathNodeType.WATER, PathNodeType.WATER.getDefaultPenalty());
     }
 
     @Override
-    public void tick(TameableDragon dragon) {
+    public void tick(TameableDragonEntity dragon) {
         World world = dragon.getWorld();
         if (dragon.age % 3 != 0) return; // no need for expensive calcs EVERY tick
         if (world.isClient || dragon.getAgeProgress() < 0.5)
