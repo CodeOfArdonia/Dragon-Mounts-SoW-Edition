@@ -16,6 +16,7 @@ modpack update.
 - Make dragon eggs hatchable.
 - 8 types of dragons, also tameable!
 - Data driven system to make your own dragons.
+- Dragon breath and multiple riders support.
 
 ## Special Thanks
 - BarracudaATA: Original project.
